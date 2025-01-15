@@ -17,22 +17,23 @@ const ChatbotCard: React.FC<ChatbotCardProps> = ({ name, description, tags }) =>
           <img className="w-8 h-8" src={chat_bubble} alt="" />
           <h3 className="font-medium text-gray-900 mt-2 mb-1">{name}</h3>
           <p className="text-gray-500 text-sm mb-4">{description}</p>
-          <hr className="border-t border-gray-200 my-5 w-full" />
-          <div className="flex flex-wrap gap-2">
-            {tags.map((tag, index) => (
-              <span
-                key={index}
-                className={`px-3 py-1 rounded-full text-xs font-medium
+        </div>
+      </div>
+      <hr className="border-t border-gray-200 my-5 -mx-6" />
+      <div className="flex flex-wrap gap-2">
+
+        {tags.map((tag, index) => (
+          <span
+            key={index}
+            className={`px-3 py-1 rounded-full text-xs font-medium
                   ${tag.toLowerCase() === 'q&a' ? 'bg-[#FFE7E7] text-[#62697B]' : ''}
                   ${tag.toLowerCase() === 'insight' ? 'bg-[#E7FFED] text-[#62697B]' : ''}
                   ${tag.toLowerCase() === 'forecast' ? 'bg-[#E7E7FF] text-[#62697B]' : ''}
                 `}
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
-        </div>
+          >
+            {tag}
+          </span>
+        ))}
       </div>
     </div>
   );
@@ -82,9 +83,10 @@ const ChatbotDashboard = () => {
             onClick={openModal}
             className="flex items-center w-[170px] h-[48px] gap-2 bg-[#9747ff] hover:bg-violet-600 text-white px-4 py-2 mt-3 rounded-xl transition-colors"
           >
-            <span className="text-xl">+</span>
+            <span className="text-xl leading-none flex items-center">+</span>
             New Chatbot
           </button>
+
           <NewChatModal isOpen={isModalOpen} onClose={closeModal} />
         </div>
         <h1 className="mb-8 text-[#62697b]">
