@@ -3,6 +3,7 @@ import lock from '../../../assets/icons/lock.png';
 import insight from '../../../assets/Images/insight.png';
 import QA from '../../../assets/Images/QA.png';
 import forecast from '../../../assets/Images/forecast.png';
+import { Link } from 'react-router-dom';
 
 interface ModalProps {
   isOpen: boolean;
@@ -118,15 +119,13 @@ const FeatureSelectionModal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
             >
               Cancel
             </button>
-            <button
-              className="w-28 sm:w-[170px] h-10 sm:h-[48px] bg-purple-600 text-white rounded-xl hover:bg-purple-700"
-              onClick={() => {
-                console.log('Selected Features:', selectedOptions);
-                onClose();
-              }}
-            >
-              Next
-            </button>
+            <Link to={'/addchatbot'}>
+              <button
+                className="w-[170px] h-[48px] bg-purple-600 text-white rounded-xl hover:bg-purple-700"             
+              >
+                Next
+              </button>
+              </Link>
           </div>
         </div>
       </div>

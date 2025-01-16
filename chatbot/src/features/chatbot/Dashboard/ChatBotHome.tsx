@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import chat_bubble from '../../../assets/icons/chat_bubble.png';
 import NewChatModal from './NewChatModal';
+import plus from '../../../assets/icons/plusIcon.png';
 
 // ChatbotCard component for individual chatbot items
 interface ChatbotCardProps {
@@ -81,9 +82,9 @@ const ChatbotDashboard = () => {
           <h1 className="text-2xl font-bold text-[#1a243b]">Chatbots</h1>
           <button
             onClick={openModal}
-            className="flex items-center w-[170px] h-[48px] gap-2 bg-[#9747ff] hover:bg-violet-600 text-white px-4 py-2 mt-3 rounded-xl transition-colors"
+            className="flex items-center w-[170px] h-[48px] gap-2 bg-[#9747ff] hover:bg-violet-600 text-white text-[16px] font-[600] px-4 py-2 mt-3 rounded-xl transition-colors"
           >
-            <span className="text-xl leading-none flex items-center">+</span>
+            <img src={plus} alt="" />
             New Chatbot
           </button>
 
