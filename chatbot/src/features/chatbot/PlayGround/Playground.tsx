@@ -17,11 +17,18 @@ type Props = {}
 
 function Playground({ }: Props) {
     const [open, setOpen] = useState(false);
-    const [activeTheme, setActiveTheme] = useState("WhiteTheme");
+    const [activeTheme, setActiveTheme] = useState("WhiteTheme"); // Active theme
+    const [selectedTheme, setSelectedTheme] = useState("WhiteTheme"); // Temporary selected theme
 
     const handleThemeChange = (event: any) => {
-        setActiveTheme(event.target.value);
-        console.log(activeTheme);
+        setSelectedTheme(event.target.value); // Update the temporary state
+        console.log("Selected Theme:", event.target.value);
+    };
+
+    const handleSave = () => {
+        setActiveTheme(selectedTheme); // Confirm and set the active theme
+        setOpen(false); // Close the dialog (if applicable)
+        console.log("Active Theme Saved:", selectedTheme);
     };
 
     return (
@@ -40,9 +47,9 @@ function Playground({ }: Props) {
                 </div>
             </div>
             <div className="flex justify-center items-center">
-                <div className="bg-[#FFFFFF] rounded-xl  py-10 w-[780px] flex justify-center">
+                <div className="bg-[#FFFFFF] rounded-xl  sm:w-[780px]  py-5 w-[500px] flex justify-center">
                     <div>
-                        <div className="w-[400px] shadow-lg border border-[#F2F4F7] rounded-xl">
+                        <div className="w-[300px] sm:w-[400px] shadow-lg border border-[#F2F4F7] rounded-xl">
                             <div className="bg-[#9747FF] rounded-t-xl flex justify-between w-full px-5 py-3">
                                 <div className='flex gap-2'>
                                     <div className="bg-[white] w-10 h-10 rounded-full p-1">
@@ -127,13 +134,13 @@ function Playground({ }: Props) {
                                         placeholder='Enter Your Message Here.....' />
                                 </div>
                                 <div className="">
-                                    <button>
+                                    <button className=''>
                                         <img src={send} className='h-4' alt="" />
                                     </button>
                                 </div>
                             </div>
                         </div>
-                        <div className='flex -me-16 justify-end '>
+                        <div className='flex -me-16  justify-end '>
                             <button onClick={() => setOpen(true)}>
                                 <img src={theme} alt="" />
                             </button>
@@ -143,76 +150,86 @@ function Playground({ }: Props) {
             </div>
 
             <Modal open={open} onClose={() => setOpen(false)}>
-                <Box className="p-6  ">
-                    <div className='mt-10 flex justify-center gap-4'>
-
-                        <div className='bg-[#FFFFFF] rounded-2xl shadow-lg p-10'>
-                            <h1 className='text-[#1A243B] text-[16px] font-[600]'>Select Theme</h1>
-                            <p className='text-[#62697B] text-[12px] font-[400]'>Choose your preferred color theme for the chatbot interface.</p>
-                            <div className='grid grid-cols-3 gap-4 my-5'>
-                                <div className="rounded-lg border border-[#00000036]">
-                                    <div className="bg-[#F0F0F0] p-5 ">
-                                        <img src={WhiteMode} alt="" />
-                                    </div>
-                                    <div className='px-3 py-2 flex gap-2'>
-                                        <input
-                                            className=""
-                                            type="radio"
-                                            value="WhiteTheme"
-                                            onChange={handleThemeChange}
-                                            checked={activeTheme === "WhiteTheme"}
-                                            style={{ transform: "scale(1.2)" }}
-                                        />
-                                        <p className='text-[14px] text-[#495160] font-[600]'>White Theme</p>
-                                    </div>
+                <Box className="p-6 flex justify-center items-center">
+                    <div className="w-full max-w-[500px] sm:max-w-[600px] lg:max-w-[700px] bg-[#FFFFFF] rounded-2xl shadow-lg p-6 sm:p-8">
+                        <h1 className="text-[#1A243B] text-[16px] font-[600]">Select Theme</h1>
+                        <p className="text-[#62697B] text-[12px] font-[400]">
+                            Choose your preferred color theme for the chatbot interface.
+                        </p>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 my-5">
+                            <div
+                                className={`rounded-lg border  ${selectedTheme === "WhiteTheme" ? " border-[#177BDA] " : "border-[#00000036]"} cursor-pointer`}
+                                onClick={() => setSelectedTheme("WhiteTheme")}
+                            >
+                                <div className="bg-[#F0F0F0] rounded-lg p-5 flex justify-center">
+                                    <img src={WhiteMode} alt="White Theme" />
                                 </div>
-                                <div className="rounded-lg border border-[#00000036]">
-                                    <div className="bg-[#F0F0F0] p-5 ">
-                                        <img src={DarkMode} alt="" />
-                                    </div>
-                                    <div className='px-3 py-2 flex gap-2'>
-                                        <input
-                                            className=""
-                                            type="radio"
-                                            value="DarkTheme"
-                                            onChange={handleThemeChange}
-                                            checked={activeTheme === "DarkTheme"}
-                                            style={{ transform: "scale(1.2)" }}
-                                        />
-                                        <p className='text-[14px] text-[#495160] font-[600]'>Dark Theme</p>
-                                    </div>
-                                </div>
-                                <div className="rounded-lg border border-[#00000036]">
-                                    <div className="bg-[#F0F0F0] p-5 ">
-                                        <img src={SoftBlue} alt="" />
-                                    </div>
-                                    <div className='px-3 py-2 flex gap-2'>
-                                        <input
-                                            className=""
-                                            type="radio"
-                                            value="SoftBlue"
-                                            onChange={handleThemeChange}
-                                            checked={activeTheme === "SoftBlue"}
-                                            style={{ transform: "scale(1.2)" }}
-                                        />
-                                        <p className='text-[14px] text-[#495160] font-[600]'>Soft Blue</p>
-                                    </div>
+                                <div className="px-3 py-2 flex gap-2 items-center">
+                                    <input
+                                        type="radio"
+                                        value="WhiteTheme"
+                                        onChange={handleThemeChange}
+                                        checked={selectedTheme === "WhiteTheme"}
+                                        style={{ transform: "scale(1.2)" }}
+                                    />
+                                    <p className="text-[14px] text-[#495160] font-[600]">White Theme</p>
                                 </div>
                             </div>
-                            <div className='flex justify-end gap-2 mt-5'>
-
-                                <button className='bg-[#F6EEFF] rounded-lg px-8 py-2 text-[#9747FF]' onClick={() => setOpen(false)}>
-                                    Cancel
-                                </button>
-                                <button className='bg-[#9747FF] rounded-lg text-white px-8 py-2' onClick={() => setOpen(false)}>
-                                    Save
-                                </button>
+                            <div
+                                className={`rounded-lg border  ${selectedTheme === "DarkTheme" ? " border-[#177BDA] " : "border-[#00000036]"} cursor-pointer`}
+                                onClick={() => setSelectedTheme("DarkTheme")}
+                            >
+                                <div className="bg-[#F0F0F0] rounded-lg p-5 flex justify-center">
+                                    <img src={DarkMode} alt="Dark Theme" />
+                                </div>
+                                <div className="px-3 py-2 flex gap-2 items-center">
+                                    <input
+                                        type="radio"
+                                        value="DarkTheme"
+                                        onChange={handleThemeChange}
+                                        checked={selectedTheme === "DarkTheme"}
+                                        style={{ transform: "scale(1.2)" }}
+                                    />
+                                    <p className="text-[14px] text-[#495160] font-[600]">Dark Theme</p>
+                                </div>
+                            </div>
+                            <div
+                                className={`rounded-lg border  ${selectedTheme === "SoftBlue" ? " border-[#177BDA] " : "border-[#00000036]"} cursor-pointer`}
+                                onClick={() => setSelectedTheme("SoftBlue")}
+                            >
+                                <div className="bg-[#F0F0F0] rounded-lg p-5 flex justify-center">
+                                    <img src={SoftBlue} alt="Soft Blue Theme" />
+                                </div>
+                                <div className="px-3 py-2 flex gap-2 items-center">
+                                    <input
+                                        type="radio"
+                                        value="SoftBlue"
+                                        onChange={handleThemeChange}
+                                        checked={selectedTheme === "SoftBlue"}
+                                        style={{ transform: "scale(1.2)" }}
+                                    />
+                                    <p className="text-[14px] text-[#495160] font-[600]">Soft Blue</p>
+                                </div>
                             </div>
                         </div>
+                        <div className="flex justify-end gap-2 mt-5">
+                            <button
+                                className="bg-[#F6EEFF] rounded-lg px-6 sm:px-8 py-2 text-[#9747FF]"
+                                onClick={() => setOpen(false)}
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                className="bg-[#9747FF] rounded-lg text-white px-6 sm:px-8 py-2"
+                                onClick={handleSave}
+                            >
+                                Save
+                            </button>
+                        </div>
                     </div>
-
                 </Box>
             </Modal>
+
 
         </div>
     )

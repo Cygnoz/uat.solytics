@@ -76,23 +76,28 @@ const ChatbotDashboard = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-[#f2f4f7] p-8">
+    <div className="min-h-screen bg-[#f2f4f7] px-8 py-5">
       <div className="max-w-7xl mx-auto ">
-        <div className="flex justify-between items-center mb-1 ">
-          <h1 className="text-2xl font-bold text-[#1a243b]">Chatbots</h1>
-          <button
-            onClick={openModal}
-            className="flex items-center w-[170px] h-[48px] gap-2 bg-[#9747ff] hover:bg-violet-600 text-white text-[16px] font-[600] px-4 py-2 mt-3 rounded-xl transition-colors"
-          >
-            <img src={plus} alt="" />
-            New Chatbot
-          </button>
+        <div className="flex justify-between items-center ">
+          <div>
+            <h1 className="text-[18px] font-[700] text-[#1A243B]">Chatbots</h1>
+            <h1 className="mb-8 text-[#62697b] py-2">
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            </h1>
+          </div>
+          <div className='-mt-8'>
+            <button
+              onClick={openModal}
+              className="flex items-center w-[170px] h-[48px] gap-2 bg-[#9747ff] hover:bg-violet-600 text-white text-[16px] font-[600] px-4 rounded-xl transition-colors"
+            >
+              <img src={plus} alt="" />
+              New Chatbot
+            </button>
 
-          <NewChatModal isOpen={isModalOpen} onClose={closeModal} />
+            <NewChatModal isOpen={isModalOpen} onClose={closeModal} />
+          </div>
         </div>
-        <h1 className="mb-8 text-[#62697b]">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-        </h1>
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {chatbots.map((chatbot, index) => (
             <ChatbotCard
