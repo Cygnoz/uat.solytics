@@ -40,7 +40,7 @@ function Login({}: Props) {
       
       // If login is successful
       navigate('/dashboard');
-      toast.success('Successfully logged in!');
+      toast.success('Loggin successful');
       
 
       // If login fails, you might want to show an error
