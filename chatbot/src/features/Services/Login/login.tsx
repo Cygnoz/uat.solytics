@@ -2,12 +2,13 @@ import React, { useState } from 'react';
 import { toast, Toaster } from 'react-hot-toast';
 import Eye from '../../../assets/Icons/Eye';
 import EyeOff from '../../../assets/Icons/EyeOff';
-import dashScreenshort from '../../../assets/Images/dashScreenshort.png';
 import { useNavigate } from 'react-router-dom';
+import bgImg from '../../../assets/Images/LoginBgFrame.png'
+import groupImg from '../../../assets/Images/GroupImgLogin.png'
 
 type Props = {}
 
-function Login({}: Props) {
+function Login({ }: Props) {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -34,18 +35,18 @@ function Login({}: Props) {
       // Add your login API call here
       // Example:
       // const response = await CheckLogin({ email, password });
-      
+
       // For demonstration, simulating API call
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
+
       // If login is successful
       navigate('/dashboard');
       toast.success('Loggin successful');
-      
+
 
       // If login fails, you might want to show an error
       // toast.error('Invalid credentials');
-      
+
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Login failed';
       setError(errorMessage);
@@ -59,8 +60,8 @@ function Login({}: Props) {
     <div className="h-[100vh] flex">
       <div className="w-[50%] flex justify-center items-center bg-white">
         <div className="w-[60%] ">
-          <p className="text-textColor font-bold text-4xl">Get Started now</p>
-          <p className="text-dropdownText mt-2 text-sm font-normal">Enter your credentials to access your account</p>
+          <p className="text-[#101828] font-[700] text-[36px]">Sign In to Cygnozbot</p>
+          <p className="text-[#667085] mt-2 text-[18px] font-[400]">AI-Powered Chatbots, Simplified for Everyone</p>
           <form className="mt-8 space-y-6" onSubmit={handleLogin}>
             <div className="rounded-md shadow-sm space-y-4">
               <div>
@@ -100,36 +101,68 @@ function Login({}: Props) {
                       className="focus:outline-none mt-1"
                     >
                       {showPassword ? (
-                        <Eye color='#4B5C79'/>
+                        <Eye color='#4B5C79' />
                       ) : (
-                        <EyeOff/>
+                        <EyeOff />
                       )}
                     </button>
                   </div>
                 </div>
               </div>
             </div>
+            <div className='flex justify-between'>
+              <div>
+                <input className='me-1' type="radio" />
+                <label htmlFor="">Remember me</label>
+              </div>
+              <a href="">
+
+              <p className='text-[#9747FF] text-[13px] font-[500]'>Forgot Password?</p>
+              </a>
+            </div>
             {error && <p className="text-red-500 text-sm">{error}</p>}
             <div className="flex justify-center">
-              <button 
-                type="submit" 
-                className="px-[45%] h-8 mt-7 bg-purple-500 rounded-md disabled:opacity-50"
+              <button
+                type="submit"
+                className="w-full py-2 bg-purple-500 rounded-md disabled:opacity-50"
                 disabled={isLoading}
               >
-                <h1 className='text-zinc-50'>{isLoading ? "Logging in..." : "Login"}</h1>
+                <h1 className='text-zinc-50'>{isLoading ? "Sign In..." : "Sign In"}</h1>
               </button>
             </div>
+              <div className='text-center text-[15px]'>
+                <p>Don’t have a account? <a className='text-[#101828] font-bold' href="">Sign Up</a></p>
+              </div>
           </form>
         </div>
       </div>
       {/* Right side with the bgImage */}
-      <div className="w-[50%] flex justify-center items-center bg-[#CACCBE]">
-        <div className="flex flex-col items-start justify-center w-[82%] h-full p-8">
-          <div className='ms-[14%]'>
-            <h2 className="text-textColor font-semibold text-3xl leading-tight mt-6">Lorem ipsum dolor <br /> dolor</h2>
-            <p className="text-textColor mt-3 text-sm">Lorem adipiscing elit, sed do eiusmod tempor incididunt ut </p>
+      <div className="w-[50%] py-5 ps-5 ">
+
+        <div
+          style={{
+            backgroundImage: `url(${bgImg})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
+            width: '550px',
+            height: '100%',
+          }}>
+          <div className="">
+            <div className=''>
+              <h2 className="text-[20px] py-5 ps-5 text-[#FFFFFF] font-[900]">Cygnozbot</h2>
+              <div className='py-2 flex justify-center'>
+                <img className='w-[65%]' src={groupImg} alt="" />
+              </div>
+              <div className='text-center px-5 pt-4'>
+                <h1 className='text-[36px] text-[#FFFFFF] font-[400]'>AI Chatbots Made Simple</h1>
+                <p className='text-[#FFFFFF] text-[16px] text-[400] py-2'>Cygnoz Bot helps you create, integrate, and deploy AI chatbots to enhance engagement and automate workflows. Transform interactions into meaningful connections effortlessly</p>
+              </div>
+              <div className=' justify-center flex pt-5'>
+                <div className="w-9 h-2 bg-white rounded-lg"></div>
+              </div>
+            </div>
           </div>
-          <img src={dashScreenshort} alt="Dashboard preview" className="mt-5 w-full"/>
         </div>
       </div>
       <Toaster position="top-right" />
