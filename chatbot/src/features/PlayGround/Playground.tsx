@@ -148,6 +148,20 @@ function Playground({ }: Props) {
                     </div>
                 </div>
             </div>
+            <div className="flex justify-end p-4 sm:mr-20">
+                <div className="flex gap-3 sm:gap-5 sm:mr-20">
+                    <Link to={"/dashboard"}>
+                    <button className="bg-[#FFFFFF] px-5 py-2 rounded-lg text-[#9747FF]">
+                        Cancel
+                    </button>
+                    </Link>
+                    <Link to={"/playground2"}>
+                        <button className="bg-[#9747FF] px-5 py-2 rounded-lg text-white">
+                            Save & Next
+                        </button>
+                    </Link>
+                </div>
+            </div>
 
             <Modal open={open} onClose={() => setOpen(false)}>
                 <Box className="p-6 flex justify-center items-center">
