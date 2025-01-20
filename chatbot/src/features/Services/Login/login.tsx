@@ -3,7 +3,7 @@ import { toast, Toaster } from 'react-hot-toast';
 import Eye from '../../../assets/Icons/Eye';
 import EyeOff from '../../../assets/Icons/EyeOff';
 import { useNavigate } from 'react-router-dom';
-import bgImg from '../../../assets/Images/LoginBgFrame.png'
+import bgImg from '../../../assets/Images/Group33.png'
 import groupImg from '../../../assets/Images/GroupImgLogin.png'
 
 type Props = {}
@@ -57,95 +57,93 @@ function Login({ }: Props) {
   };
 
   return (
-    <div className="h-[100vh] flex">
-      <div className="w-[50%] flex justify-center items-center bg-white">
-        <div className="w-[60%] ">
-          <p className="text-[#101828] font-[700] text-[36px]">Sign In to Cygnozbot</p>
-          <p className="text-[#667085] mt-2 text-[18px] font-[400]">AI-Powered Chatbots, Simplified for Everyone</p>
+    <div className="h-[100vh] flex flex-col-reverse sm:flex-row">
+      <div className="w-full sm:w-[50%] justify-center flex items-center bg-white p-4 sm:p-0">
+        <div className="w-full sm:w-[60%]">
+          <p className="text-[#101828] font-[700] text-[24px] sm:text-[36px]">Sign In to Cygnozbot</p>
+          <p className="text-[#667085] mt-2 text-[16px] sm:text-[18px] font-[400]">AI-Powered Chatbots, Simplified for Everyone</p>
           <form className="mt-8 space-y-6" onSubmit={handleLogin}>
-            <div className="rounded-md shadow-sm space-y-4">
-              <div>
-                <label htmlFor="email" className="text-dropdownText text-sm">
-                  Email
-                </label>
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  className="pl-3 text-sm w-[100%] rounded-md text-start mt-1.5 bg-white border border-inputBorder h-[39px] leading-tight focus:outline-none focus:bg-white focus:border-darkRed"
-                  placeholder="Enter Email"
-                />
-              </div>
-              <div>
-                <label htmlFor="password" className="text-dropdownText text-sm">
-                  Password
-                </label>
-                <div className="relative">
-                  <input
-                    id="password"
-                    name="password"
-                    type={showPassword ? 'text' : 'password'}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                    className="pl-3 text-sm w-[100%] rounded-md text-start mt-1.5 bg-white border border-inputBorder h-[39px] leading-tight focus:outline-none focus:bg-white focus:border-darkRed"
-                    placeholder="Password"
-                  />
-                  <div className="absolute inset-y-0 right-0 flex items-center pr-3">
-                    <button
-                      type="button"
-                      onClick={togglePasswordVisibility}
-                      className="focus:outline-none mt-1"
-                    >
-                      {showPassword ? (
-                        <Eye color='#4B5C79' />
-                      ) : (
-                        <EyeOff />
-                      )}
-                    </button>
-                  </div>
-                </div>
-              </div>
+        <div className="rounded-md shadow-sm space-y-4">
+          <div>
+            <label htmlFor="email" className="text-dropdownText text-sm">
+          Email
+            </label>
+            <input
+          id="email"
+          name="email"
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+          className="pl-3 text-sm w-full rounded-md text-start mt-1.5 bg-white border border-inputBorder h-[39px] leading-tight focus:outline-none focus:bg-white focus:border-darkRed"
+          placeholder="Enter Email"
+            />
+          </div>
+          <div>
+            <label htmlFor="password" className="text-dropdownText text-sm">
+          Password
+            </label>
+            <div className="relative">
+          <input
+            id="password"
+            name="password"
+            type={showPassword ? 'text' : 'password'}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            className="pl-3 text-sm w-full rounded-md text-start mt-1.5 bg-white border border-inputBorder h-[39px] leading-tight focus:outline-none focus:bg-white focus:border-darkRed"
+            placeholder="Password"
+          />
+          <div className="absolute inset-y-0 right-0 flex items-center pr-3">
+            <button
+              type="button"
+              onClick={togglePasswordVisibility}
+              className="focus:outline-none mt-1"
+            >
+              {showPassword ? (
+            <Eye color='#4B5C79' />
+              ) : (
+            <EyeOff />
+              )}
+            </button>
+          </div>
             </div>
-            <div className='flex justify-between'>
-              <div>
-                <input className='me-1' type="radio" />
-                <label htmlFor="">Remember me</label>
-              </div>
-              <a href="">
-
-              <p className='text-[#9747FF] text-[13px] font-[500]'>Forgot Password?</p>
-              </a>
-            </div>
-            {error && <p className="text-red-500 text-sm">{error}</p>}
-            <div className="flex justify-center">
-              <button
-                type="submit"
-                className="w-full py-2 bg-purple-500 rounded-md disabled:opacity-50"
-                disabled={isLoading}
-              >
-                <h1 className='text-zinc-50'>{isLoading ? "Sign In..." : "Sign In"}</h1>
-              </button>
-            </div>
-              <div className='text-center text-[15px]'>
-                <p>Don’t have a account? <a className='text-[#101828] font-bold' href="">Sign Up</a></p>
-              </div>
+          </div>
+        </div>
+        <div className='flex justify-between'>
+          <div>
+            <input className='me-1' type="radio" />
+            <label htmlFor="">Remember me</label>
+          </div>
+          <a href="">
+            <p className='text-[#9747FF] text-[13px] font-[500]'>Forgot Password?</p>
+          </a>
+        </div>
+        {error && <p className="text-red-500 text-sm">{error}</p>}
+        <div className="flex justify-center">
+          <button
+            type="submit"
+            className="w-full py-2 bg-purple-500 rounded-md disabled:opacity-50"
+            disabled={isLoading}
+          >
+            <h1 className='text-zinc-50'>{isLoading ? "Sign In..." : "Sign In"}</h1>
+          </button>
+        </div>
+        <div className='text-center text-[15px]'>
+          <p>Don’t have a account? <a className='text-[#101828] font-bold' href="">Sign Up</a></p>
+        </div>
           </form>
         </div>
       </div>
       {/* Right side with the bgImage */}
-      <div className="w-[50%] py-5 ps-5 ">
-
-        <div
+      <div className="w-[50%] hidden sm:block py-5 ps-5">
+        <div className=''
           style={{
             backgroundImage: `url(${bgImg})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             backgroundRepeat: 'no-repeat',
-            width: '550px',
+            width: '600px',
             height: '100%',
           }}>
           <div className="">
@@ -156,7 +154,7 @@ function Login({ }: Props) {
               </div>
               <div className='text-center px-5 pt-4'>
                 <h1 className='text-[36px] text-[#FFFFFF] font-[400]'>AI Chatbots Made Simple</h1>
-                <p className='text-[#FFFFFF] text-[16px] text-[400] py-2'>Cygnoz Bot helps you create, integrate, and deploy AI chatbots to enhance engagement and automate workflows. Transform interactions into meaningful connections effortlessly</p>
+                <p className='text-[#FFFFFF] text-[16px] text-[400] px-5 py-2'>Cygnoz Bot helps you create, integrate, and deploy AI chatbots to enhance engagement and automate workflows. Transform interactions into meaningful connections effortlessly</p>
               </div>
               <div className=' justify-center flex pt-5'>
                 <div className="w-9 h-2 bg-white rounded-lg"></div>
