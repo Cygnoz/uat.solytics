@@ -17,7 +17,7 @@ function PlaygroundConnect() {
             <div className="bg-[#F2F4F7] min-h-screen">
                 <div className="px-4 sm:px-6 md:px-10 py-3">
                     <div className="flex gap-2 flex-wrap">
-                        <a className="text-[#9747FF] text-[18px] font-[700]" href="/">Chatbots</a>
+                        <a className="text-[#9747FF] text-[18px] font-[700]" href="/dashboard">Chatbots</a>
                         <img className="h-4 mt-1.5" src={rightArrow} alt="Right Arrow" />
                         <a className="text-[#1A243BF] text-[18px] font-[700]" href="">Connect</a>
                     </div>
