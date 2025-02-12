@@ -17,6 +17,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libzbar0 \
     libmagic1 \
     curl \
+    gcc \
+    python3-dev \
+    libasound2-dev \
+    portaudio19-dev \
+    python3-pyaudio \
+    libportaudio2 \
     && rm -rf /var/lib/apt/lists/*
 
 # Create a non-root user
