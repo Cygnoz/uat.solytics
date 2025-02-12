@@ -1,0 +1,60 @@
+# Use the official Python image from the Docker Hub
+FROM python:3.11-slim
+
+# Set the working directory in the container
+WORKDIR /app
+
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PATH="/opt/venv/bin:$PATH" \
+    FLASK_ENV=production
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    tesseract-ocr \
+    poppler-utils \
+    libzbar0 \
+    libmagic1 \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create a non-root user
+RUN groupadd -r appuser && useradd -r -g appuser appuser
+
+# Create virtual environment and set permissions
+RUN python -m venv /opt/venv && \
+    chown -R appuser:appuser /opt/venv
+
+# Set permissions for the working directory
+RUN chown -R appuser:appuser /app
+
+# Switch to non-root user
+USER appuser
+
+# Copy the requirements file into the container
+COPY --chown=appuser:appuser Backend/requirements.txt .
+
+# Install Python dependencies
+RUN /opt/venv/bin/pip install --upgrade pip && \
+    /opt/venv/bin/pip install --no-cache-dir -r requirements.txt gunicorn
+
+# Copy the rest of the backend code into the container
+COPY --chown=appuser:appuser Backend/ .
+
+# Expose the port your application runs on
+EXPOSE 5001
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:5001/ || exit 1
+
+# Command to run the backend application with Gunicorn
+CMD ["gunicorn", \
+     "--workers", "4", \
+     "--bind", "0.0.0.0:5001", \
+     "--timeout", "120", \
+     "--access-logfile", "-", \
+     "--error-logfile", "-", \
+     "--log-level", "info", \
+     "app:app"]
