@@ -53,6 +53,11 @@ from langchain_openai import OpenAIEmbeddings
 from langchain_community.vectorstores import FAISS
 from langchain_community.docstore.in_memory import InMemoryDocstore
 
+
+@app.route("/", methods=["GET"])
+def status():
+    return jsonify({"message": "Chatbot is working 🤖"}), 200
+
 def save_faiss_index(faiss_index, bot_name):
     """Save FAISS index and its data for MongoDB storage"""
     try:
