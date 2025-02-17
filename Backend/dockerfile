@@ -25,25 +25,24 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libportaudio2 \
     && rm -rf /var/lib/apt/lists/*
 
+# Create virtual environment before switching user
+RUN python -m venv /opt/venv
+
+# Install Python dependencies as root first
+COPY requirements.txt .
+RUN . /opt/venv/bin/activate && \
+    pip install --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt gunicorn
+
 # Create a non-root user
 RUN groupadd -r appuser && useradd -r -g appuser appuser
 
-# Create virtual environment and set permissions
-RUN python -m venv /opt/venv && \
-    chown -R appuser:appuser /opt/venv
-
-# Set permissions for the working directory
-RUN chown -R appuser:appuser /app
+# Set permissions after installing dependencies
+RUN chown -R appuser:appuser /opt/venv && \
+    chown -R appuser:appuser /app
 
 # Switch to non-root user
 USER appuser
-
-# Copy the requirements file into the container
-COPY --chown=appuser:appuser requirements.txt .
-
-# Install Python dependencies
-RUN /opt/venv/bin/pip install --upgrade pip && \
-    /opt/venv/bin/pip install --no-cache-dir -r requirements.txt gunicorn
 
 # Copy the rest of the backend code into the container
 COPY --chown=appuser:appuser . .
