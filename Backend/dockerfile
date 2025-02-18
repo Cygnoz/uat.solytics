@@ -28,7 +28,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Create virtual environment before switching user
 RUN python -m venv /opt/venv
 
-# Install Python dependencies as root first
+# Install pymongo separately first
+RUN . /opt/venv/bin/activate && \
+    pip install --no-cache-dir pymongo && \
+    python -c "import pymongo; print('pymongo version:', pymongo.__version__)"
+
+# Install other Python dependencies
 COPY requirements.txt .
 RUN . /opt/venv/bin/activate && \
     pip install --upgrade pip && \
