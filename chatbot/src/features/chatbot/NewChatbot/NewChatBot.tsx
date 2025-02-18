@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import rightArrow from '../../../assets/Icons/chevron-right.png'
 import Q_A from './Q&A/Q_A';
+import AgentChat from './Agent/AgentChat';
+
 
 type Props = {}
 
 function NewChatBot({ }: Props) {
-    const [activeTab, setActiveTab] = useState("Q & A");
+    const [activeTab, setActiveTab] = useState("Agent");
 
     return (
         <div className="bg-[#F2F4F7]">
@@ -16,11 +18,22 @@ function NewChatBot({ }: Props) {
                     <a className="text-[#1A243BF] text-[18px] font-[700]" href="">New Chat Bot</a>
                 </div>
                 <div className="flex items-center justify-center pt-5">
-                    <div className="grid grid-cols-3 items-center justify-center h-10 bg-[#FFFFFF] max-w-sm sm:max-w-md md:max-w-lg w-full rounded-3xl">
+                <div className="grid grid-cols-4 items-center justify-center h-10 bg-[#FFFFFF] max-w-3xl w-full rounded-3xl">
+
+                        {/* Agent chat Tab */}
+                        <div
+                            onClick={() => setActiveTab("Agent")}
+                            className={`text-center text-[14px] sm:text-[16px] font-[600] h-10 pt-2 rounded-l-3xl cursor-pointer ${activeTab === "Agent"
+                                ? "bg-[#9747FF] text-white"
+                                : "text-[#9747FF]"
+                                }`}
+                        >
+                            Agent
+                        </div>
                         {/* Q & A Tab */}
                         <div
                             onClick={() => setActiveTab("Q & A")}
-                            className={`text-center text-[14px] sm:text-[16px] font-[600] h-10 pt-2 rounded-l-3xl cursor-pointer ${activeTab === "Q & A"
+                            className={`text-center text-[14px] sm:text-[16px] font-[600] h-10 pt-2 cursor-pointer ${activeTab === "Q & A"
                                 ? "bg-[#9747FF] text-white"
                                 : "text-[#9747FF]"
                                 }`}
@@ -52,6 +65,11 @@ function NewChatBot({ }: Props) {
                     </div>
                 </div>
                 <div className="pt-5">
+                {activeTab === "Agent" ? (
+                        <div>
+                            <AgentChat />
+                        </div>
+                    ) : null}
                     {activeTab === "Q & A" ? (
                         <div>
                             <Q_A />
