@@ -14,6 +14,7 @@ import json
 from PyPDF2 import PdfReader
 from langchain_openai import OpenAIEmbeddings
 from langchain.text_splitter import CharacterTextSplitter
+from werkzeug.security import generate_password_hash,check_password_hash
 
 # Import custom modules
 from file_processing import process_uploaded_file
@@ -21,6 +22,8 @@ from data_processing import scrape_data, process_scraped_data
 from response_handling import ResponseHandler
 from embed_handling import ModelManager
 from voice_handler import VoiceHandler
+from framework import create_custom_framework,get_custom_framework
+from connection import get_database
 
 # Load environment variables
 load_dotenv()
@@ -401,6 +404,94 @@ def load_faiss_index(index_data):
     
     return faiss_index
 
+@app.route("/create_framework", methods=["POST"])
+def create_framework():
+    try:
+        data = request.get_json()
+        framework = create_custom_framework(
+            project_name=data["project_name"],
+            input_fields=data["input_fields"],
+            upload_fields=data["upload_fields"],
+            choice_fields=data["choice_fields"],
+            boat_name=data["boat_name"],
+            boat_iframeurl=data["boat_iframeurl"],
+            qa=data["qa"],
+            port_number=data["port_number"]
+        )
+        return jsonify({
+            "message": "Framework created successfully",
+            "framework": str(framework)
+        }), 200
+    except Exception as e:
+        logging.error(f"Error creating framework: {str(e)}")
+        return jsonify({
+            "error": "Failed to create framework",
+            "message": str(e)
+        }), 500
+
+@app.route("/get_framework/<project_name>", methods=["GET"])
+def get_framework(project_name):
+    try:
+        print("project name---", project_name)
+        framework = get_custom_framework(project_name)
+
+        return jsonify({
+            "message": "Framework retrieved successfully",
+            "framework": framework
+        }), 200
+    except Exception as e:
+        logging.error(f"Error retrieving framework: {str(e)}")
+        return jsonify({
+            "error": "Failed to retrieve framework",
+            "message": str(e)
+        }), 500
+
+@app.route('/register', methods=['POST'])
+def register():
+    data = request.get_json()
+    username = data.get('username', '')
+    password = data.get('password', '')
+
+    if not username or not password:
+        return jsonify({"error": "Username and password are required"}), 400
+
+    db = get_database()
+    users_collection = db['users']
+
+    # Encrypt the password
+    hashed_password = generate_password_hash(password)
+
+    # Insert the user into the database
+    users_collection.insert_one({"username": username, "password": hashed_password})
+
+    return jsonify({"message": "User registered successfully"}), 201
+
+
+@app.route('/login', methods=['POST'])
+def login():
+    data = request.get_json()
+    username = data.get('username', '')
+    password = data.get('password', '')
+
+    if not username or not password:
+        return jsonify({"error": "Username and password are required"}), 400
+
+    db = get_database()
+    users_collection = db['users']
+
+    # Find user by username
+    user = users_collection.find_one({"username": username})
+
+    if not user:
+        return jsonify({"error": "Invalid username or password"}), 401
+
+    # Check if the provided password matches the hashed password
+    if not check_password_hash(user['password'], password):
+        return jsonify({"error": "Invalid username or password"}), 401
+
+    # Generate a success message or token if authentication succeeds
+    return jsonify({"message": "Login successful"}), 200
+
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5001)  
+    app.run(host="0.0.0.0", port=5001)
 
