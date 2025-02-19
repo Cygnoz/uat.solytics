@@ -60,11 +60,4 @@ HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:5001/ || exit 1
 
 # Command to run the backend application with Gunicorn
-CMD ["gunicorn", \
-     "--workers", "4", \
-     "--bind", "0.0.0.0:5001", \
-     "--timeout", "120", \
-     "--access-logfile", "-", \
-     "--error-logfile", "-", \
-     "--log-level", "info", \
-     "app:app"]
+CMD ["/opt/venv/bin/gunicorn", "--workers", "4", "--bind", "0.0.0.0:5001", "--timeout", "120", "--access-logfile", "-", "--error-logfile", "-", "--log-level", "info", "app:app"]
