@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Upload from '../../assets/Icons/Upload';
 import men1 from '../../assets/images/men1.png';
 import men2 from '../../assets/images/men2.png';
 import LeftArrow from '../../assets/Icons/LeftArrow';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Star from '../../assets/Icons/Star';
 
 interface Message {
@@ -37,7 +37,16 @@ const AgentChat = () => {
     const [rating, setRating] = useState<number>(0);
     const [isResolved, setIsResolved] = useState<boolean | null>(null);
     const [formData, setFormData] = useState<Record<string, string>>({});
+    const [projectName, setProjectName] = useState<string>('');
     const navigate = useNavigate();
+    const location = useLocation();
+
+    useEffect(() => {
+        // Extract project name from URL path
+        const pathParts = location.pathname.split('/');
+        const project = pathParts[pathParts.length - 1];
+        setProjectName(project);
+    }, [location]);
 
     // Sample framework data (replace with actual API response)
     const frameworkData: FrameworkResponse = {
@@ -166,7 +175,7 @@ const AgentChat = () => {
         </div>
     );
 
-    return (
+        return (
         <div className="flex pt-10 justify-center">
             <div className="bg-white rounded-lg shadow-2xl w-[500px] h-fit flex flex-col p-4">
                 <div className="flex justify-between">
@@ -178,7 +187,8 @@ const AgentChat = () => {
 
                 <div>
                     <p className="text-center text-[#177BDA] text-2xl font-medium">
-                        {frameworkData.framework.boat_name}
+                        {/* {frameworkData.framework.boat_name} */}
+                        {projectName}
                     </p>
                     <p className="text-center my-2 text-[#919191] text-sm font-normal">
                         {frameworkData.framework.qa}

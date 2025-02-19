@@ -13,7 +13,7 @@ import { useNavigate } from "react-router-dom";
 
 type Props = {};
 
-const HomePage = ({ }: Props) => {
+const NavBar = ({ }: Props) => {
     const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState("/"); // Default active tab
 
@@ -198,4 +198,4 @@ const HomePage = ({ }: Props) => {
     );
 };
 
-export default HomePage;
+export default NavBar;

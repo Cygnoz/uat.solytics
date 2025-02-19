@@ -54,23 +54,25 @@ import HelpPage from './Modules/Home/HelpPage';
 import SendMessage from './Modules/SendMessage/SendMessage';
 import Messages from './Modules/Home/Messages';
 import AgentChat from './Modules/Home/AgentChat';
-import HomePage from './Modules/Home/HomePage';
+import NavBar from './Modules/Home/NavBar';
 import { Toaster } from 'react-hot-toast';
 
 function AppContent() {
   const location = useLocation();
 
-  const BillieRoutes = [
-    '/main',
-    '/help',
-    '/send-messages',
-    '/message',
-    '/agent-chat',
-  ];
+  const isBillieRoute = (path: string) => {
+    return [
+      '/main',
+      '/help',
+      '/send-messages',
+      '/message',
+      '/agent-chat'
+    ].includes(path) || path.startsWith('/main/');
+  };
 
   return (
     <>
-      {!BillieRoutes.includes(location.pathname) && location.pathname !== '/' && <Header />}
+      {!isBillieRoute(location.pathname) && location.pathname !== '/' && <Header />}
       
       <Routes>
       {/* Routes from framework */}
@@ -86,10 +88,10 @@ function AppContent() {
       <Route path="/send-messages" element={<SendMessage />} />
       <Route path="/message" element={<Messages />} />
       <Route path="/agent-chat" element={<AgentChat />} />
+      <Route path="/main/:projectName" element={<MainPage />} />
       </Routes>
-
-      {/* Conditionally render HomePage (Navbar) only for the second project's routes */}
-      {BillieRoutes.includes(location.pathname) && <HomePage />}
+      {/* Conditionally render Navbar */}
+      {isBillieRoute(location.pathname) && <NavBar />}
 
       <Toaster position="top-center" />
     </>
