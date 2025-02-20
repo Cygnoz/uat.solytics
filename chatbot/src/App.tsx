@@ -53,9 +53,9 @@ import MainPage from './Modules/Home/MainPage';
 import HelpPage from './Modules/Home/HelpPage';
 import SendMessage from './Modules/SendMessage/SendMessage';
 import Messages from './Modules/Home/Messages';
-import AgentChat from './Modules/Home/AgentChat';
 import NavBar from './Modules/Home/NavBar';
 import { Toaster } from 'react-hot-toast';
+import BillieAgentChat from './Modules/Home/BillieAgentChat';
 
 function AppContent() {
   const location = useLocation();
@@ -87,7 +87,7 @@ function AppContent() {
       <Route path="/help" element={<HelpPage />} />
       <Route path="/send-messages" element={<SendMessage />} />
       <Route path="/message" element={<Messages />} />
-      <Route path="/agent-chat" element={<AgentChat />} />
+      <Route path="/agent-chat" element={<BillieAgentChat />} />
       <Route path="/main/:projectName" element={<MainPage />} />
       </Routes>
       {/* Conditionally render Navbar */}
