@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
+import chat_bubble from '../../../assets/icons/chat_bubble.png';
 import lock from '../../../assets/icons/lock.png';
 import insight from '../../../assets/Images/insight.png';
 import QA from '../../../assets/Images/QA.png';
+import browseIcon from '../../../assets/Icons/browseIcon.png'
 import forecast from '../../../assets/Images/forecast.png';
 import { Link } from 'react-router-dom';
 
@@ -31,6 +33,12 @@ const FeatureSelectionModal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
 
   const features = [
     {
+      id: 'agent',
+      title: 'Agent Chat',
+      description: 'Chat with a live agent for real-time support.',
+      icon: QA
+    },
+    {
       id: 'qa',
       title: 'Q&A',
       description: 'Interactive answers from data for user queries instantly.',
@@ -53,8 +61,53 @@ const FeatureSelectionModal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="w-full max-w-[90%] sm:max-w-lg md:max-w-2xl lg:max-w-3xl bg-white rounded-3xl shadow-xl">
+    <div className="w-full max-w-[95%] sm:max-w-xl md:max-w-3xl lg:max-w-4xl bg-white rounded-3xl shadow-xl p-6">
         <div className="px-4 sm:px-8 pt-6 sm:pt-8">
+          <div className='flex items-center space-x-3 mb-4'>
+            <img className='w-6 h-6' src={chat_bubble} alt="" />
+            <h1 className='text-[#1A243B] font-semibold'>Create chatbot</h1>
+          </div>
+          <form>
+            <div className="flex flex-col md:flex-row gap-6 mb-6">
+              {/* Upload Bot Icon */}
+              <div className="flex flex-col items-center justify-center border-2 border-dashed border-purple-400 rounded-xl w-60 h-40 cursor-pointer">
+              <label htmlFor="botIcon" className="text-center cursor-pointer">
+                  <div className="flex flex-col items-center">
+                    <img src={browseIcon} alt="Bot Icon" className="w-12 h-12 mb-2" />
+                    <span className="text-gray-600 text-sm">Upload Bot Icon <span className="text-blue-500">browse</span></span>
+                    <p className="text-xs text-gray-400">Support JPG, PNG</p>
+                  </div>
+                </label>
+                <input type="file" id="botIcon" className="hidden" accept="image/png, image/jpeg" />
+              </div>
+
+              {/* Form Inputs */}
+              <div className="flex flex-col flex-grow gap-4">
+                {/* Chatbot Name */}
+                <div>
+                  <label htmlFor="chatbotName" className="block text-sm font-medium text-gray-600">Chatbot Name</label>
+                  <input
+                    type="text"
+                    id="chatbotName"
+                    placeholder="Enter Chatbot Name"
+                    className="mt-2 h-10 w-full px-4 border border-gray-300 rounded-full shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-700 placeholder:text-sm"
+                  />
+                </div>
+
+                {/* Description */}
+                <div>
+                  <label htmlFor="chatbotDescription" className="block text-sm font-medium text-gray-600">Description</label>
+                  <input
+                    type="text"
+                    id="chatbotDescription"
+                    placeholder="Enter Chatbot Description"
+                    className="mt-2 h-10 w-full px-4 border border-gray-300 rounded-full shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-700 placeholder:text-sm"
+                  />
+                </div>
+              </div>
+            </div>
+
+          </form>
           <div className="mb-6">
             <h2 className="text-lg sm:text-xl font-semibold text-[#1A243B]">
               Please Choose Functionalities Include in the Chatbot
@@ -64,7 +117,7 @@ const FeatureSelectionModal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
             </p>
           </div>
 
-          <div className="space-y-4 max-h-[50vh] sm:max-h-[60vh] overflow-auto">
+          <div className="space-y-4 max-h-[40vh] sm:max-h-[50vh] overflow-auto">
             {features.map((feature) => (
               <div
                 key={feature.id}
@@ -112,7 +165,7 @@ const FeatureSelectionModal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
             ))}
           </div>
 
-          <div className="flex justify-end space-x-4 mt-6 sm:mt-8 mb-6 sm:mb-8">
+          <div className="flex justify-end space-x-4 mt-4 sm:mt-6 mb-4 sm:mb-6">
             <button
               className="w-28 sm:w-[170px] h-10 sm:h-[48px] bg-purple-100 text-purple-600 hover:bg-purple-50 rounded-xl"
               onClick={onClose}
@@ -121,11 +174,11 @@ const FeatureSelectionModal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
             </button>
             <Link to={'/addchatbot'}>
               <button
-                className="w-[170px] h-[48px] bg-purple-600 text-white rounded-xl hover:bg-purple-700"             
+                className="w-[170px] h-[48px] bg-purple-600 text-white rounded-xl hover:bg-purple-700"
               >
                 Next
               </button>
-              </Link>
+            </Link>
           </div>
         </div>
       </div>
