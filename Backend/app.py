@@ -1,5 +1,6 @@
 import logging
 import os
+from flask_cors import CORS, cross_origin
 from flask import Flask, request, jsonify
 import pickle
 from dotenv import load_dotenv
@@ -30,6 +31,13 @@ load_dotenv()
 
 # Initialize Flask app
 app = Flask(__name__)
+CORS(app, resources={
+    r"/*": {
+        "origins": ["http://localhost:5173"], 
+        "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        "allow_headers": ["Content-Type", "Authorization"]
+    }
+})
 
 logging.basicConfig(level=logging.INFO)
 
@@ -404,35 +412,26 @@ def load_faiss_index(index_data):
     
     return faiss_index
 
-@app.route("/create_framework", methods=["POST"])
+# In your Flask app route
+
+@app.route('/create_framework', methods=['POST'])
+@cross_origin()
 def create_framework():
     try:
         data = request.get_json()
-        framework = create_custom_framework(
-            project_name=data["project_name"],
-            input_fields=data["input_fields"],
-            upload_fields=data["upload_fields"],
-            choice_fields=data["choice_fields"],
-            boat_name=data["boat_name"],
-            boat_iframeurl=data["boat_iframeurl"],
-            qa=data["qa"],
-            port_number=data["port_number"]
-        )
-        return jsonify({
-            "message": "Framework created successfully",
-            "framework": str(framework)
-        }), 200
+        if not data:
+            return jsonify({"error": "No data provided"}), 400
+        
+        result = create_custom_framework(data)
+        return jsonify({"message": "Framework created successfully", "id": result}), 201
+        
     except Exception as e:
-        logging.error(f"Error creating framework: {str(e)}")
-        return jsonify({
-            "error": "Failed to create framework",
-            "message": str(e)
-        }), 500
+        return jsonify({"error": str(e)}), 500
+    
 
 @app.route("/get_framework/<project_name>", methods=["GET"])
 def get_framework(project_name):
     try:
-        print("project name---", project_name)
         framework = get_custom_framework(project_name)
 
         return jsonify({

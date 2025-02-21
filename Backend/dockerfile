@@ -25,39 +25,34 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libportaudio2 \
     && rm -rf /var/lib/apt/lists/*
 
-# Create virtual environment before switching user
+# Create virtual environment
 RUN python -m venv /opt/venv
 
-# Install pymongo separately first
-RUN . /opt/venv/bin/activate && \
-    pip install --no-cache-dir pymongo && \
-    python -c "import pymongo; print('pymongo version:', pymongo.__version__)"
-
-# Install other Python dependencies
+# Install Python dependencies
 COPY requirements.txt .
 RUN . /opt/venv/bin/activate && \
     pip install --upgrade pip && \
-    pip install --no-cache-dir -r requirements.txt gunicorn
+    pip install --no-cache-dir -r requirements.txt
 
 # Create a non-root user
 RUN groupadd -r appuser && useradd -r -g appuser appuser
 
-# Set permissions after installing dependencies
+# Set permissions
 RUN chown -R appuser:appuser /opt/venv && \
     chown -R appuser:appuser /app
 
 # Switch to non-root user
 USER appuser
 
-# Copy the rest of the backend code into the container
+# Copy the rest of the backend code
 COPY --chown=appuser:appuser . .
 
-# Expose the port your application runs on
+# Expose the port
 EXPOSE 5001
 
-# Health check
+# Health check (assumes /health endpoint; adjust if needed)
 HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:5001/ || exit 1
+    CMD curl -f http://localhost:5001/health || exit 1
 
-# Command to run the backend application with Gunicorn
+# Command to run the application
 CMD ["/opt/venv/bin/gunicorn", "--workers", "4", "--bind", "0.0.0.0:5001", "--timeout", "120", "--access-logfile", "-", "--error-logfile", "-", "--log-level", "info", "app:app"]
