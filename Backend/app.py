@@ -53,15 +53,15 @@ db = mongo_client["chatbot_db"]
 chatbots_collection = db["chatbots"]
 
 # Configure OpenAI
-api_key = os.getenv("OPENAI_API_KEY")
-if not api_key:
-    raise ValueError("OPENAI_API_KEY is missing in the environment variables")
-openai.api_key = api_key
+# api_key = os.getenv("OPENAI_API_KEY")
+# if not api_key:
+#     raise ValueError("OPENAI_API_KEY is missing in the environment variables")
+# openai.api_key = api_key
 
-# Initialize helper classes
-response_handler = ResponseHandler()
-model_manager = ModelManager()
-voice_handler = VoiceHandler()
+# # Initialize helper classes
+# response_handler = ResponseHandler()
+# model_manager = ModelManager()
+# voice_handler = VoiceHandler()
 
 
 @app.route("/", methods=["GET"])
