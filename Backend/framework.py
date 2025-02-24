@@ -85,3 +85,16 @@ def get_custom_framework(project_name: str):
         return framework
     except Exception as e:
         raise ValueError(f"Error retrieving framework: {str(e)}")
+    
+
+# Your get_all_frameworks function
+def get_all_frameworks():
+    try:
+        frameworks = list(framework_collection.find())
+        if not frameworks:
+            raise ValueError("No frameworks found")
+        for framework in frameworks:
+            framework["_id"] = str(framework["_id"])
+        return frameworks
+    except Exception as e:
+        raise ValueError(f"Error retrieving frameworks: {str(e)}")
