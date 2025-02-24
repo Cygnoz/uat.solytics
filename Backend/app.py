@@ -4,32 +4,8 @@ from flask_cors import CORS, cross_origin
 from flask import Flask, request, jsonify
 from dotenv import load_dotenv
 from pymongo import MongoClient
-# import openai
-# import pickle
-# import faiss
-# from langchain_community.vectorstores.faiss import FAISS
-from bson import ObjectId
-from datetime import datetime
-import requests
-import json
-# from PyPDF2 import PdfReader
-# from langchain_openai import OpenAIEmbeddings
-# from langchain.text_splitter import CharacterTextSplitter
-from werkzeug.security import generate_password_hash,check_password_hash
-# import faiss
-# import numpy as np
-# from langchain_community.vectorstores import FAISS
-# from langchain_community.docstore.in_memory import InMemoryDocstore
-# from langchain.chains import ConversationalRetrievalChain
-# from langchain_openai import ChatOpenAI
-
-# Import custom modules
-# from file_processing import process_uploaded_file
-# from data_processing import scrape_data, process_scraped_data
-# from response_handling import ResponseHandler
-# from embed_handling import ModelManager
-# from voice_handler import VoiceHandler
-from framework import create_custom_framework,get_custom_framework,get_all_frameworks
+from werkzeug.security import generate_password_hash, check_password_hash
+from framework import create_custom_framework, get_custom_framework, get_all_frameworks
 from connection import get_database
 
 # Load environment variables
