@@ -13,28 +13,38 @@ import AgentIcon from "../../assets/icons/AgentIcon";
 import NoRecords from "../../components/Ui/NoRecords";
 import SearchBar from "../../components/Ui/SearchBar";
 import { SkeletonCard } from "../../components/Skeltons/MessagesSkelton";
+import Star from "../../assets/icons/Star";
+import { io } from "socket.io-client";
+import toast from "react-hot-toast";
+
+const AGENT_SOCKET_URL = import.meta.env.VITE_REACT_APP_TICKETS;
 
 const Messages = () => {
   const navigate = useNavigate();
   const { request: getClientHis } = useApi("get", 3004);
   const { request: getaTicket } = useApi("get", 3004);
-  const { feedbackModalState, setFeedbackModalState } = useResponse();
   const [isModal, setIsModal] = useState(false);
-  const handleModalToggle = () => {
+  const {setFeedBackDetails}=useResponse()
+  const handleModalToggle = (agentId?:string,clientId?:string,ticketId?:string) => {
+    setFeedBackDetails({
+      supportAgentId:agentId || "",
+      customerId:clientId || "",
+      ticketId:ticketId||""
+    })
     setIsModal((prev) => !prev);
-    setFeedbackModalState({ hasMessaged: false, isSocketConnected: false });
   };
 
-  const [searchValue,setSearchValue]=useState<any>('')
+  const [searchValue, setSearchValue] = useState<any>("");
 
   const { orgData } = useOrg();
-  const { loading, setLoading } = useResponse();
+  const { loading, setLoading,setTicketStatus } = useResponse();
   const [allTickets, setAllTickets] = useState<any[]>([]);
   const status = [
-    { label: "Open", color: "#60A5FA" }, // Green (Bright & Readable)
-    { label: "Resolved", color: "#34D399" }, // Blue (Indicates Completion)
-    { label: "In progress", color: "#FACC15" }, // Yellow (Indicates Work in Progress)
-  ];
+    { label: "Open", color: "#60A5FA" }, // Blue (Indicates a new issue)
+    { label: "Resolved", color: "#A78BFA" }, // Violet (Indicates resolution)
+    { label: "In progress", color: "#FACC15" }, // Yellow (Indicates work in progress)
+    { label: "Closed", color: "#34D399" } // Green (Indicates finalization)
+];
   // const messages = [
   //   {
   //     id: 1,
@@ -96,7 +106,7 @@ const Messages = () => {
       );
 
       if (response && !error) {
-        console.log("res",response)
+        console.log("res", response);
         const chatHistory = await Promise.all(
           response?.data.data.map(async (item: any) => {
             // Check if ticketId is valid
@@ -131,23 +141,23 @@ const Messages = () => {
     }
   };
 
-  const filteredTickets = allTickets.filter(ticket => 
-    ticket?.subject?.toLowerCase().includes(searchValue.toLowerCase()) ||
-    ticket?.status?.toLowerCase().includes(searchValue.toLowerCase()) ||
-    ticket?.description?.toLowerCase().includes(searchValue.toLowerCase())
+  const filteredTickets = allTickets.filter(
+    (ticket) =>
+      ticket?.subject?.toLowerCase().includes(searchValue.toLowerCase()) ||
+      ticket?.status?.toLowerCase().includes(searchValue.toLowerCase()) ||
+      ticket?.description?.toLowerCase().includes(searchValue.toLowerCase())
   );
 
   useEffect(() => {
     getClientHistory();
-    if (
-      feedbackModalState.hasMessaged &&
-      !feedbackModalState.isSocketConnected
-    ) {
-      handleModalToggle();
-    }
-  }, [feedbackModalState]);
-  
-  
+    const newSocket=io(AGENT_SOCKET_URL)
+
+    newSocket.on("ticketCount", (count: any) => {
+      console.log(count);
+      getClientHistory()
+    });
+    setTicketStatus("")
+  }, []);
 
   return (
     <>
@@ -165,83 +175,108 @@ const Messages = () => {
 
           {/* Search Bar */}
           <div className="mt-4">
-            <SearchBar onSearchChange={setSearchValue} searchValue={searchValue} placeholder="Search Messages/Tickets"/>
+            <SearchBar
+              onSearchChange={setSearchValue}
+              searchValue={searchValue}
+              placeholder="Search Messages/Tickets"
+            />
           </div>
         </div>
         <div className="pt-3">
-  {/* Messages List */}
-  {loading ? (
-    <div className="space-y-3">
-    {[...Array(5)].map((_, index) => (
-      <SkeletonCard key={index} />
-    ))}
-  </div>
-  ) : filteredTickets?.length > 0 ? ( 
-    <div className="max-h-[500px] overflow-y-auto hide-scrollbar"> {/* Scrollable container */}
-      {filteredTickets.map((ticket) => (
-        <div
-          onClick={() => navigate(`/ticket-view/${ticket?._id}`)}
-          key={ticket._id}
-          className="p-4 mb-3 h-auto cursor-pointer bg-[#F3F9FF] rounded-2xl gap-6"
-        >
-          <div className="flex items-start gap-3">
-            <AgentIcon agentImg={ticket?.supportAgentId?.user?.userImage || ""} />
-            <div className="flex-1">
-              <div className="flex items-center justify-between gap-2">
-                <span className="text-[#0F2A43] font-medium">
-                  {ticket?.subject}
-                </span>
-                <span className="text-xs text-gray-400">{`${new Date(
-                  ticket?.updatedAt
-                ).toLocaleDateString()} ${new Date(ticket?.updatedAt).toLocaleTimeString("en-US", {
-                  hour: "numeric",
-                  minute: "2-digit",
-                  hour12: true,
-                })}`}</span>
-              </div>
-
-              {ticket.status && (
-                <span
-                  className="text-xs font-medium px-2 py-0.5 rounded-2xl"
-                  style={{
-                    backgroundColor:
-                      status.find(
-                        (s) => s.label.toLowerCase() === ticket.status.toLowerCase()
-                      )?.color || "#B1D9AC",
-                    color: "#3A3A3A",
-                  }}
-                >
-                  {ticket.status}
-                </span>
-              )}
-              <div className="grid grid-cols-1 w-full">
-                <p className="text-[#A19999] text-sm mt-1 w-full whitespace-normal break-words overflow-hidden">
-                  {ticket?.description}
-                </p>
-              </div>
+          {/* Messages List */}
+          {loading ? (
+            <div className="space-y-3">
+              {[...Array(5)].map((_, index) => (
+                <SkeletonCard key={index} />
+              ))}
             </div>
-            {ticket.notifications && (
-              <span className="bg-[#B8DAFE] text-blue-500 text-xs rounded-full w-6 h-6 flex items-center justify-center">
-                {ticket.notifications}
-              </span>
-            )}
-          </div>
+          ) : filteredTickets?.length > 0 ? (
+            <div className="max-h-[500px] overflow-y-auto hide-scrollbar">
+              {" "}
+              {/* Scrollable container */}
+              {filteredTickets.map((ticket) => (
+                <div
+                  onClick={() => {
+                    setTicketStatus(ticket?.status)
+                    navigate(`/ticket-view/${ticket?._id}`)
+                }}
+                  key={ticket._id}
+                  className="p-4 mb-3 h-auto cursor-pointer bg-[#F3F9FF] rounded-2xl gap-6"
+                >
+                  <div className="flex items-start gap-3">
+                    <AgentIcon
+                      agentImg={ticket?.supportAgentId?.user?.userImage || ""}
+                    />
+                    <div className="flex-1">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-[#0F2A43] font-medium">
+                          {ticket?.subject}
+                        </span>
+                        <span className="text-xs text-gray-400">{`${new Date(
+                          ticket?.updatedAt
+                        ).toLocaleDateString()} ${new Date(
+                          ticket?.updatedAt
+                        ).toLocaleTimeString("en-US", {
+                          hour: "numeric",
+                          minute: "2-digit",
+                          hour12: true,
+                        })}`}</span>
+                      </div>
+
+                      {ticket.status && (
+                        <span
+                          className="text-xs font-medium px-2 py-0.5 rounded-2xl"
+                          style={{
+                            backgroundColor:
+                              status.find(
+                                (s) =>
+                                  s.label.toLowerCase() ===
+                                  ticket.status.toLowerCase()
+                              )?.color || "#B1D9AC",
+                            color: "#3A3A3A",
+                          }}
+                        >
+                          {ticket.status}
+                        </span>
+                      )}
+                      <div className="grid grid-cols-1 w-full">
+                        <p className="text-[#A19999] text-sm mt-1 w-full whitespace-normal break-words overflow-hidden">
+                          {ticket?.description}
+                        </p>
+                      </div>
+
+                      {ticket.status == "Resolved" && (
+                        <div className="flex justify-center items-center mt-2">
+                          <div onClick={(e)=>{
+                            handleModalToggle(ticket?.supportAgentId?.user?._id,ticket?.customerId?._id,ticket?._id)
+                            e.stopPropagation()
+                          }} className="text-sm font-medium ms-auto px-2 py-1 rounded-lg text-white flex gap-2 items-center bg-gray-800">
+                            <p>Add Feedback</p><Star filled color="yellow" size={14}/>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                    {ticket.notifications && (
+                      <span className="bg-[#B8DAFE] text-blue-500 text-xs rounded-full w-6 h-6 flex items-center justify-center">
+                        {ticket.notifications}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <NoRecords parentHeight="450px" />
+          )}
+
+          {/* Floating Action Button */}
+          <button
+            onClick={() => navigate("/agent-chat")}
+            className="fixed cursor-pointer right-4 bottom-28 w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center text-white"
+          >
+            <PlusIcon />
+          </button>
         </div>
-      ))}
-    </div>
-  ) : (
-    <NoRecords parentHeight="450px" />
-  )}
-
-  {/* Floating Action Button */}
-  <button
-    onClick={() => navigate("/agent-chat")}
-    className="fixed cursor-pointer right-4 bottom-28 w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center text-white"
-  >
-    <PlusIcon />
-  </button>
-</div>
-
       </div>
       <Modal isOutsideClose={false} open={isModal} onClose={handleModalToggle}>
         <FeedBackModal onClose={handleModalToggle} />

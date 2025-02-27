@@ -1,13 +1,10 @@
 import React, { createContext, useState, ReactNode, useContext } from 'react';
 
-interface IsFeedBack {
-  isSocketConnected: boolean;
-  hasMessaged: boolean;
-}
 
 interface FeedBackData {
   supportAgentId: string;
   customerId: string;
+  ticketId:string
 }
 
 
@@ -15,10 +12,10 @@ interface FeedBackData {
 type ResponseContextType = {
   loading: boolean;
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
-  feedbackModalState: IsFeedBack;
-  setFeedbackModalState: React.Dispatch<React.SetStateAction<IsFeedBack>>;
   feebBackDetails:FeedBackData;
   setFeedBackDetails: React.Dispatch<React.SetStateAction<FeedBackData>>;
+  ticketStatus:string
+  setTicketStatus:React.Dispatch<React.SetStateAction<string>>;
 };
 
 // Create the context with a default value
@@ -26,24 +23,24 @@ const ResponseContext = createContext<ResponseContextType | undefined>(undefined
 
 // Context provider component
 export const ResponseProvider = ({ children }: { children: ReactNode }) => {
-  const [feedbackModalState, setFeedbackModalState] = useState<IsFeedBack>({
-    isSocketConnected: false,
-    hasMessaged: false,
-  });
 
   const [feebBackDetails,setFeedBackDetails]=useState<FeedBackData>( {
     supportAgentId: '',
-    customerId:''
+    customerId:'',
+    ticketId:""
   })
+
+  
 
 
   // const [userOrgData,setUserOrgData]=
   
 
   const [loading, setLoading] = useState<boolean>(false);
+  const [ticketStatus,setTicketStatus]=useState('')
 
   return (
-    <ResponseContext.Provider value={{ loading, setLoading, feedbackModalState, setFeedbackModalState,feebBackDetails,setFeedBackDetails }}>
+    <ResponseContext.Provider value={{ loading, setLoading, feebBackDetails,setFeedBackDetails,setTicketStatus,ticketStatus }}>
       {children}
     </ResponseContext.Provider>
   );

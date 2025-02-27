@@ -10,19 +10,19 @@ import { useResponse } from "../../context/ResponseContext";
 import useApi from "../../Hooks/useApi";
 import { endpoints } from "../../Services/apiEndpoints";
 import { useOrg } from "../../context/OrgContext";
+import toast from "react-hot-toast";
 const CLIENT_SOCKET_URL = import.meta.env.VITE_REACT_APP_TICKETS;
 type Props = {};
 
 function TicketView({}: Props) {
   const { id } = useParams();
   const [socket, setSocket] = useState<Socket | null>(null);
-  const {setFeedBackDetails}=useResponse()
+  const {setFeedBackDetails,ticketStatus}=useResponse()
   const {orgData}=useOrg()
   // const [agentImg,setAgentImg]=useState('')
   const chatBoxRef: any = useRef(null);
   const textareaRef: any = useRef(null);
   const [allmessages, setAllmessages] = useState<any[]>([]);
-  const { setFeedbackModalState } = useResponse();
   const [message, setMessage] = useState("");
   const { request: getChatHistory } = useApi("get", 3004); 
   
@@ -127,10 +127,6 @@ function TicketView({}: Props) {
       socket.emit("sendMessage", messageBody);
       setMessage("");
   
-      setFeedbackModalState((prev) => ({
-        ...prev,
-        hasMessaged: true, // Message sent, so set hasMessaged to true
-      }));
   
       if (textareaRef.current) {
         textareaRef.current.style.height = "19px";
@@ -159,7 +155,8 @@ function TicketView({}: Props) {
     if(allmessages.length==1){
       setFeedBackDetails({
         supportAgentId:allmessages[0].senderId?._id ||"",
-        customerId:allmessages[0]?.receiverId?. _id || ""
+        customerId:allmessages[0]?.receiverId?. _id || "",
+        ticketId:id||""
      })
      }
   }, [allmessages]);
@@ -167,11 +164,10 @@ function TicketView({}: Props) {
     getChatHis();
     const newSocket = io(CLIENT_SOCKET_URL);
     setSocket(newSocket);
-  
-    setFeedbackModalState((prev) => ({ ...prev, isSocketConnected: true })); // Mark as connected
+
   
     newSocket.emit("joinRoom", id);
-  
+    newSocket.emit("messageRead", { ticketId: id, role: "Customer" });
     newSocket.on("chatHistory", (chatHistory: any) => {
       setAllmessages(chatHistory);
     });
@@ -180,11 +176,7 @@ function TicketView({}: Props) {
       setAllmessages((allMsg) => {
         const updatedMessages = [...allMsg, newMessage];
       
-        setFeedbackModalState((prev) => ({
-          ...prev,
-          hasMessaged: updatedMessages.length > allMsg.length, // Compare with previous state
-        }));
-
+      
       
         return updatedMessages;
       });
@@ -192,15 +184,15 @@ function TicketView({}: Props) {
     });
   
     newSocket.on("disconnect", () => {
-      setFeedbackModalState((prev) => ({ ...prev, isSocketConnected: false })); // Mark as disconnected
+    
     });
    
     return () => {
       newSocket.disconnect();
-      setFeedbackModalState((prev) => ({ ...prev, isSocketConnected: false })); // Ensure it updates on cleanup
     };
    
   }, [id]);
+
 
   console.log("dd",allmessages);
   
@@ -272,16 +264,26 @@ function TicketView({}: Props) {
         className="flex items-center justify-between space-x-2 w-full mt-2  bg-[#F3F9FF] p-2 rounded-full"
       >
         <img src={CygnozLogo} className="w-[22px]" alt="" />
-
-        <textarea
+        
+    
+       
+          <textarea
+           onClick={()=>{
+            if(ticketStatus==="Closed"){
+              toast.error("This ticket has been closed you can raise another ticket!")
+            }
+           }}
           ref={textareaRef}
           value={message}
+          readOnly={ticketStatus==="Closed"?true:false}
           onChange={(e) => handleInput(e)}
           onKeyDown={handleKeyDown}
-          className="text-[#495160] bg-[#F3F9FF] w-full text-sm focus:outline-none overflow-x-auto resize-none hide-scrollbar"
+          className="text-[#495160] text-start bg-[#F3F9FF] w-full text-sm focus:outline-none overflow-x-auto resize-none hide-scrollbar"
           placeholder="Type Something..."
           rows={1}
         />
+
+      
         <div className="flex space-x-2 items-center">
           {/* <Mic/> */}
           <button

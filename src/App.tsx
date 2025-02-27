@@ -13,51 +13,103 @@ import ChatbotDashboard from './FrameWorkModules/chatbot/Dashboard/ChatBotHome';
 import NewChatBot from './FrameWorkModules/chatbot/NewChatbot/NewChatBot';
 import Playground from './FrameWorkModules/PlayGround/Playground';
 import PlaygroundConnect from './FrameWorkModules/PlayGround/Connect/PlaygroundConnect';
+import { Navlist } from './components/Navlist/Navlist';
+
+
+const routeComponents: { [key: string]: JSX.Element } = {
+  "/main": <MainPage />,
+  "/help": <HelpPage />,
+  "/send-messages": <SendMessage />,
+  "/message": <Messages />,
+  "/agent-chat": <TicketRise />,
+  "/ticket-view/:id": <TicketView />,
+};
 
 function App() {
   const location = useLocation();
   const currentPath = location.pathname;
-  const framework = true; // Change this based on your logic if needed
 
+  const isWrappedRoute = Navlist.some(({ basePath, subPath }) =>
+    [basePath, ...subPath].some(path => 
+      path.includes(":") ? new RegExp(`^${path.replace(/:[^\s/]+/, ".*")}$`).test(currentPath) : path === currentPath
+    )
+  );
   return (
-    <>
-      {!framework ? (
-        <div className="w-full h-[98vh]">
-          <div className="bg-white rounded-xl shadow-2xl flex flex-col h-full">
-            {/* Scrollable Content */}
-            <div className="flex-1 overflow-auto hide-scrollbar">
-              <Routes>
-                <Route path="/main" element={<MainPage />} />
-                <Route path="/help" element={<HelpPage />} />
-                <Route path="/send-messages" element={<SendMessage />} />
-                <Route path="/message" element={<Messages />} />
-                <Route path="/agent-chat" element={<TicketRise />} />
-                <Route path="/ticket-view/:id" element={<TicketView />} />
-              </Routes>
-            </div>
+    // <>
+    //   {!framework ? (
+    //     <div className="w-full h-[98vh]">
+    //       <div className="bg-white rounded-xl shadow-2xl flex flex-col h-full">
+    //         {/* Scrollable Content */}
+    //         <div className="flex-1 overflow-auto hide-scrollbar">
+    //           <Routes>
+    //             <Route path="/main" element={<MainPage />} />
+    //             <Route path="/help" element={<HelpPage />} />
+    //             <Route path="/send-messages" element={<SendMessage />} />
+    //             <Route path="/message" element={<Messages />} />
+    //             <Route path="/agent-chat" element={<TicketRise />} />
+    //             <Route path="/ticket-view/:id" element={<TicketView />} />
+    //           </Routes>
+    //         </div>
 
-            {/* Fixed Footer */}
-            {!currentPath.startsWith('/ticket-view') && (
-              <div className="mt-auto">
-                <Footer />
-              </div>
-            )}
+    //         {/* Fixed Footer */}
+    //         {!currentPath.startsWith('/ticket-view') && (
+    //           <div className="mt-auto">
+    //             <Footer />
+    //           </div>
+    //         )}
+    //       </div>
+    //       <Toaster reverseOrder={false} />
+    //     </div>
+    //   ) : (
+    //     <div>
+    //       <Routes>
+    //         {/* Routes from framework */}
+    //         <Route path="/" element={<Login />} />
+    //         <Route path="/dashboard" element={<ChatbotDashboard />} />
+    //         <Route path="/addchatbot" element={<NewChatBot />} />
+    //         <Route path="/playground" element={<Playground />} />
+    //         <Route path="/playground2" element={<PlaygroundConnect />} />
+    //       </Routes>
+    //     </div>
+    //   )}
+    // </>
+    <>
+    {isWrappedRoute ? (
+      <div className="w-full h-[98vh]">
+        <div className="bg-white rounded-xl shadow-2xl flex flex-col h-full">
+          {/* Scrollable Content */}
+          <div className="flex-1 overflow-auto hide-scrollbar">
+            <Routes>
+              {Navlist.flatMap(({ subPath }) =>
+                subPath.map((path) => (
+                  <Route key={path} path={path} element={routeComponents[path]} />
+                ))
+              )}
+            </Routes>
           </div>
-          <Toaster reverseOrder={false} />
+
+          {/* Fixed Footer */}
+          {!currentPath.startsWith('/ticket-view') && (
+            <div className="mt-auto">
+              <Footer />
+            </div>
+          )}
         </div>
-      ) : (
-        <div>
-          <Routes>
-            {/* Routes from framework */}
-            <Route path="/" element={<Login />} />
-            <Route path="/dashboard" element={<ChatbotDashboard />} />
-            <Route path="/addchatbot" element={<NewChatBot />} />
-            <Route path="/playground" element={<Playground />} />
-            <Route path="/playground2" element={<PlaygroundConnect />} />
-          </Routes>
-        </div>
-      )}
-    </>
+        <Toaster reverseOrder={false} />
+      </div>
+    ) : (
+      <div>
+        <Routes>
+          <Route path="/" element={<Login />} />
+          <Route path="/dashboard" element={<ChatbotDashboard />} />
+          <Route path="/addchatbot" element={<NewChatBot />} />
+          <Route path="/playground" element={<Playground />} />
+          <Route path="/playground2" element={<PlaygroundConnect />} />
+        </Routes>
+      </div>
+    )}
+  </>
+    
   );
 }
 
