@@ -15,7 +15,7 @@ import SearchBar from "../../components/Ui/SearchBar";
 import { SkeletonCard } from "../../components/Skeltons/MessagesSkelton";
 import Star from "../../assets/icons/Star";
 import { io } from "socket.io-client";
-import toast from "react-hot-toast";
+import { socket } from "../../context/SocketContext";
 
 const AGENT_SOCKET_URL = import.meta.env.VITE_REACT_APP_TICKETS;
 
@@ -98,48 +98,45 @@ const Messages = () => {
   // }
 
   const getClientHistory = async () => {
-    setLoading(true); // Set loading to true before making the API call
-
     try {
+      setLoading(true); // Start loading before the API call
+  
       const { response, error } = await getClientHis(
         `${endpoints.CHATS_LEAD}/${orgData?.orgEmail}`
       );
-
-      if (response && !error) {
-        console.log("res", response);
-        const chatHistory = await Promise.all(
-          response?.data.data.map(async (item: any) => {
-            // Check if ticketId is valid
-            if (!item?.ticketId) {
-              return item;
-            }
-
-            // Fetch ticket details
-            const { response, error } = await getaTicket(
-              `${endpoints.TICKETS}/${item?.ticketId}`
-            );
-            if (error) {
-              return null;
-            }
-
-            return response?.data;
-          })
-        );
-        // Filter out items with null ticketDetails
-        const filteredChatHistory = chatHistory?.filter(
-          (history) => history?.ticketDetails !== null
-        );
-        console.log("Filtered Chat History:", filteredChatHistory);
-        setAllTickets(filteredChatHistory.reverse());
+  
+      if (error) {
+        console.error("Error in API response:", error?.response?.data || error);
+        setAllTickets([]);
+        return;
+      }
+  
+      if (response?.data?.data?.length) {
+        const ticketDetailsArray = response.data.data
+          .filter((history: any) => history?.ticketDetails !== null)
+          .sort(
+            (a: any, b: any) =>
+              new Date(b.ticketDetails.updatedAt).getTime() -
+              new Date(a.ticketDetails.updatedAt).getTime()
+          )
+          .map((history: any) => history.ticketDetails); // 🔑 Extract only ticketDetails
+  
+        console.log("Filtered Ticket Details:", ticketDetailsArray);
+        setAllTickets(ticketDetailsArray);
       } else {
-        console.log("Error in initial API call:", error?.response?.data);
+        console.log("No chat history found.");
+        setAllTickets([]);
       }
     } catch (err) {
       console.error("Error fetching client history:", err);
+      setAllTickets([]);
     } finally {
-      setLoading(false); // Set loading to false after the API call completes
+      setLoading(false); // End loading after everything
     }
   };
+  
+  
+  
 
   const filteredTickets = allTickets.filter(
     (ticket) =>
@@ -149,15 +146,30 @@ const Messages = () => {
   );
 
   useEffect(() => {
+   if(orgData?.orgEmail){
     getClientHistory();
-    const newSocket=io(AGENT_SOCKET_URL)
-
-    newSocket.on("ticketCount", (count: any) => {
-      console.log(count);
-      getClientHistory()
-    });
+   }
     setTicketStatus("")
-  }, []);
+    socket.on("getCustomerHistory", (customerHis) => {
+      if (customerHis?.data?.length > 0) {
+        const ticketDetailsArray = customerHis?.data
+          .filter((history: any) => history?.ticketDetails !== null)
+          .sort(
+            (a: any, b: any) =>
+              new Date(b.ticketDetails.updatedAt).getTime() -
+              new Date(a.ticketDetails.updatedAt).getTime()
+          )
+          .map((history: any) => history.ticketDetails); // 🔑 Extract only ticketDetails
+    
+        console.log("Filtered Ticket Details:", ticketDetailsArray);
+        setAllTickets(ticketDetailsArray);
+      } else {
+        console.log("No chat history found.");
+        setAllTickets([]);
+      }
+    });
+     
+  }, [orgData]);
 
   return (
     <>
@@ -203,6 +215,7 @@ const Messages = () => {
                   key={ticket._id}
                   className="p-4 mb-3 h-auto cursor-pointer bg-[#F3F9FF] rounded-2xl gap-6"
                 >
+                  
                   <div className="flex items-start gap-3">
                     <AgentIcon
                       agentImg={ticket?.supportAgentId?.user?.userImage || ""}
@@ -212,6 +225,7 @@ const Messages = () => {
                         <span className="text-[#0F2A43] font-medium">
                           {ticket?.subject}
                         </span>
+                        <span className="text-sm text-[#0F2A43] font-medium">{ticket?.ticketId}</span>
                         <span className="text-xs text-gray-400">{`${new Date(
                           ticket?.updatedAt
                         ).toLocaleDateString()} ${new Date(
@@ -256,11 +270,14 @@ const Messages = () => {
                         </div>
                       )}
                     </div>
-                    {ticket.notifications && (
+                    {/* {ticket.notifications && (
                       <span className="bg-[#B8DAFE] text-blue-500 text-xs rounded-full w-6 h-6 flex items-center justify-center">
                         {ticket.notifications}
                       </span>
-                    )}
+                    )} */}
+                   {ticket?.unreadMessagesCount>0&&<div className="h-5 w-5  rounded-full top-1 right-2 bg-red-600 text-white flex items-center justify-center">
+                <p className="text-xs font-semibold">{ticket?.unreadMessagesCount}</p>
+              </div>}
                   </div>
                 </div>
               ))}

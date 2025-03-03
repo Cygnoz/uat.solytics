@@ -95,7 +95,6 @@ function App() {
             </div>
           )}
         </div>
-        <Toaster reverseOrder={false} />
       </div>
     ) : (
       <div>
@@ -108,6 +107,7 @@ function App() {
         </Routes>
       </div>
     )}
+    <Toaster reverseOrder={false} />
   </>
     
   );

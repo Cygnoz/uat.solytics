@@ -4,15 +4,17 @@ import HomeIcon from "../assets/icons/HomeIcon";
 import MessageIcon from "../assets/icons/MessageIcon";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Navlist } from "../components/Navlist/Navlist";
-
-
+import { useOrg } from "../context/OrgContext";
+import toast from "react-hot-toast";
+import { useSocket } from "../context/SocketContext";
 type Props = {};
 
 const Footer = ({}: Props) => {
-    const navigate = useNavigate();
+    const navigate = useNavigate()
     const location = useLocation();
+    const {socket,notification,setNotification}=useSocket()
     const [activeTab, setActiveTab] = useState("/main"); // Default active tab
-
+    const {orgData}=useOrg()
     useEffect(() => {
         if (location) {
             const currentPath = location.pathname;
@@ -26,6 +28,18 @@ const Footer = ({}: Props) => {
             setActiveTab(matchingTab ? matchingTab.basePath : "/main");
         }
     }, [location]);
+
+   useEffect(() => {
+    if (orgData?.orgEmail) {
+         socket.emit("joinNotificationRoom", orgData.orgEmail);
+         socket.on("unreadCountUpdate",(count)=>{
+           console.log("count",count);
+           setNotification(count)
+         })
+       }
+   }, [orgData?.orgEmail]);
+    
+    
     
 
     return (
@@ -40,12 +54,17 @@ const Footer = ({}: Props) => {
             </div>
 
             {/* Message Tab */}
+            <div className="relative">
+            {notification>0&&<div className="h-5 w-5 absolute rounded-full -top-1 right-2 bg-red-600 text-white flex items-center justify-center">
+                <p className="text-xs font-semibold">{notification}</p>
+              </div>}
             <div
                 className="items-center cursor-pointer flex flex-col"
                 onClick={() => navigate("/message")}
             >
                 <MessageIcon color={activeTab === "/message" ? "#3E9DFF" : "#94A3B8"} />
                 <p className={activeTab === "/message" ? "text-[#3E9DFF]" : "text-[#94A3B8]"}>Message</p>
+            </div>
             </div>
 
             {/* Help Tab */}

@@ -1,19 +1,20 @@
-import {  useState } from 'react';
+import { useEffect, useState } from "react";
 // import Upload from '../../assets/icons/Upload'
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 // import Star from '../../assets/icons/Star';
 
-import { endpoints } from '../../Services/apiEndpoints';
-import toast from 'react-hot-toast';
-import useApi from '../../Hooks/useApi';
-import TextArea from '../../components/Form/TexArea';
-import Input from '../../components/Form/Input';
-import Button from '../../components/Form/Button';
-import GoBackButton from '../../components/Ui/GoBackButton';
-import OrganizationIcon from '../../assets/icons/OrganizationIcon';
-import { useOrg } from '../../context/OrgContext';
-
-
+import { endpoints } from "../../Services/apiEndpoints";
+import toast from "react-hot-toast";
+import useApi from "../../Hooks/useApi";
+import TextArea from "../../components/Form/TexArea";
+import Input from "../../components/Form/Input";
+import Button from "../../components/Form/Button";
+import GoBackButton from "../../components/Ui/GoBackButton";
+import OrganizationIcon from "../../assets/icons/OrganizationIcon";
+import { useOrg } from "../../context/OrgContext";
+import Select from "../../components/Form/Select";
+import UploadInput from "../../components/Form/UploadInput";
+import { socket } from "../../context/SocketContext";
 
 // interface Message {
 //     id: string;
@@ -29,344 +30,254 @@ import { useOrg } from '../../context/OrgContext';
 // }
 
 const TicketRise = () => {
-    // const [rating, setRating] = useState<number>(0);
-    // const [isResolved, setIsResolved] = useState<boolean | null>(null);
-    // console.log(isResolved);
+  // const [rating, setRating] = useState<number>(0);
+  // const [isResolved, setIsResolved] = useState<boolean | null>(null);
+  // console.log(isResolved);
 
-    const navigate = useNavigate()
-    const {orgData}=useOrg()
-    
+  const navigate = useNavigate();
+  const { orgData } = useOrg();
 
-    
-    
+  const { request: riseTicket } = useApi("post", 3004);
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [ticketData, setTicketData] = useState({
+    requester: orgData?.orgEmail || "",
+    subject: "",
+    description: "",
+    choice: [{ label: "", value: "" }], // Can contain one or more objects
+    uploads: [],
+    text: [{ label: "", value: "" }], // Can contain one or more objects
+  });
+  const [moduleData, setModuleData] = useState([
+    {
+      name: "",
+      values: [{ label: "", value: "" }],
+    },
+  ]);
 
+  const ticketSubmit = async (e: any) => {
+    e.preventDefault(); // Prevent default form submission
+    const { description, subject } = ticketData;
+    console.log("formData", ticketData);
 
-
-
-    const { request: riseTicket } = useApi('post', 3004)
-    const [isSubmitted, setIsSubmitted] = useState(false);
-    const [ticketData, setTicketData] = useState({
-        requester: orgData?.orgEmail,
-        subject: '',
-        description: ''
-    })
-
-    const ticketSubmit = async (e: any) => {
-        e.preventDefault(); // Prevent default form submission
-        const { description, subject } = ticketData;
-        console.log("formData", ticketData);
-
-        if (description || subject) {
-            try {
-                const { response, error } = await riseTicket(endpoints.UNASSIGNED_TICKET, ticketData);
-                if (response && !error) {
-                    console.log("responseData", response.data);
-                    toast.success(response.data.message);
-                    // setTicketId(response.data.ticketId);
-                    navigate(`/ticket-view/${response.data.ticketId}`)
-                    setIsSubmitted(true); // Hide form on success
-                } else {
-                    toast.error(error.response.data.message);
-                }
-            } catch (err) {
-                console.log(err);
-            }
+    if (description || subject) {
+      try {
+        const { response, error } = await riseTicket(
+          endpoints.UNASSIGNED_TICKET,
+          ticketData
+        );
+        if (response && !error) {
+          console.log("responseData", response.data);
+          toast.success(response.data.message);
+          // setTicketId(response.data.ticketId);
+          navigate(`/ticket-view/${response.data.ticketId}`);
+          setIsSubmitted(true); // Hide form on success
+          socket.emit('AddUnAssignedTickets')
         } else {
-            toast("Please fill the description or subject");
+          toast.error(error.response.data.message);
         }
-    };
+      } catch (err) {
+        console.log(err);
+      }
+    } else {
+      toast("Please fill the description or subject");
+    }
+  };
 
+  useEffect(() => {
+    if (orgData?.ticket_fields?.choice?.length > 0) {
+      const formattedData = orgData.ticket_fields.choice.map((field: any) => ({
+        name: field.label,
+        values: field.options.map((option: any) => ({
+          label: option,
+          value: option,
+        })),
+      }));
+      setModuleData(formattedData);
+    }
+  }, [orgData]);
 
+  const handleFileUpload = (base64: string | null) => {
+    if (base64) {
+      setTicketData((prev:any) => ({
+        ...prev,
+        uploads: [...prev.uploads, base64], // Append the new base64 string
+      }));
+    }
+  };
 
+  
+ 
+  
+  console.log("ticket",ticketData);
+  
 
-    // useEffect(() => {
-    //     setFormData((prev) => ({
-    //         ...prev, // Correct spread syntax
-    //         requester: 'mevin@gmail.com',
-    //     }));
-    // }, [])
+  return (
+    <div className=" flex flex-col px-3 pb-2  relative">
+      {/* Header Section - Fixed */}
+      <GoBackButton />
 
-   
-   
-
-
-    // const messages: Message[] = [
-    //     {
-    //         id: '1',
-    //         content: 'Lorem Ipsum Content Provide by Agent',
-    //         sender: 'agent',
-    //         timestamp: '11:05 AM'
-    //     },
-    //     {
-    //         id: '2',
-    //         content: 'Lorem Content by Visitor',
-    //         sender: 'visitor',
-    //         timestamp: '11:05 AM'
-    //     },
-    //     {
-    //         id: '3',
-    //         content: 'Lorem Ipsum Content Provide by Agent',
-    //         sender: 'agent',
-    //         timestamp: '11:05 AM'
-    //     },
-    //     {
-    //         id: '4',
-    //         content: 'Lorem Content by Visitor',
-    //         sender: 'visitor',
-    //         timestamp: '11:05 AM'
-    //     }
-    // ];
-
-    // const MessageBubble = ({ msg }: { msg: any }) => {
-    //     // const isAgent = message.sender === 'agent';
-    //     return (
-    //         // <div className={`flex flex-col ${isAgent ? 'items-start' : 'items-end'} mb-4`}>
-    //         //     <span className="text-xs text-gray-500 mt-1 mb-1 px-20">
-    //         //         {`${message.sender === 'agent' ? 'Agent' : 'Visitor'} ${message.timestamp}`}
-    //         //     </span>
-    //         //     <div className="flex items-start space-x-2">
-    //         //         {isAgent && (
-    //         //             <div className="w-8 h-8 rounded-full bg-gray-300 flex-shrink-0" />
-    //         //         )}
-    //         //         <div
-    //         //             className={`max-w-[70%] rounded-lg px-4 py-2 ${isAgent
-    //         //                 ? 'bg-gray-100 text-gray-800'
-    //         //                 : 'bg-blue-500 text-white'
-    //         //                 }`}
-    //         //         >
-    //         //             <p>{message.content}</p>
-    //         //         </div>
-    //         //         {!isAgent && (
-    //         //             <div className="w-8 h-8 rounded-full bg-gray-300 flex-shrink-0" />
-    //         //         )}
-    //         //     </div>
-
-    //         // </div>
-
-    //         <div
-    //             key={msg.ticketId}
-    //             className={`flex flex-col space-y-1 w-full mb-2 ${msg.senderId.role === 'Customer' ? "items-end" : "items-start"
-    //                 }`}
-    //         >
-    //              {/* <p className="text-xs text-gray-500  ">
-    //        {formatTime(msg?.createdAt)} 
-    //       </p> */}
-
-    //       {msg.senderId.role !== 'Customer' ?(
-    //      <div className='flex justify-end items-center gap-2'>
-    //     <p className="text-sm font-bold text-[#4B5C79]">
-    //         Agent
-    //       </p>
-    //       <p className="text-xs text-gray-500  ">
-    //       {formatTime(msg?.createdAt)}
-    //       </p>
-    //      </div>):
-    //      <div className='flex justify-end items-center gap-2'>
-    //         <p className="text-sm font-bold text-[#4B5C79]">
-    //          {msg.senderId?.name}
-    //       </p>
-    //       <p className="text-xs text-gray-500  ">
-    //       {formatTime(msg?.createdAt)}
-    //       </p>
-    //      </div>
-    // }
-
-    //             <div
-    //                 className={`${msg.senderId.role === "Customer"
-    //                     ? "bg-[#59BEFD] text-white rounded-br-none"
-    //                     : "bg-[#F2F2F2] text-[#1B4A77] rounded-bl-none"
-    //                     } w-fit max-w-full px-4 py-2 rounded-2xl text-sm ${msg.senderId.role === "Customer" ? "me-3 ms-8" : "ms-4 me-8"
-    //                     }`}
-    //             >
-    //                 <p
-
-    //                     className="break-words"
-    //                     style={{
-    //                         overflowWrap: "break-word", // Break long words to the next line
-    //                         wordBreak: "break-word",   // Additional support for word breaking
-    //                         maxWidth: "100%",          // Ensures content stays within container
-    //                     }}
-    //                 >{msg?.message}</p>
-    //             </div>
-
-    //             {msg.senderId.role !== 'Customer' ? (
-    //                 // <img
-    //                 //     src={SaImage} // Replace with actual sender logo if available
-    //                 //     className="w-7 h-7 rounded-full shadow-lg bg-white "
-    //                 //     alt="Sender"
-    //                 // />
-    //                 <img
-    //                     src={SaImage} // Replace with actual sender logo if available
-    //                     className="w-7 h-7 rounded-full shadow-lg bg-white "
-    //                     alt="Sender"
-    //                 />) :
-    //                 // <OrganizationIcon />
-    //                 <img
-    //                     src={men1} // Replace with actual sender logo if available
-    //                     className="w-7 h-7 rounded-full shadow-lg bg-white "
-    //                     alt="Sender"
-    //                 />
-    //             }
-    //             {/* <div
-    //                 className={`${msg.senderId.role === "Customer"
-    //                     ? "bg-[#59BEFD] text-white rounded-tr-none"
-    //                     : "bg-[#F2F2F2] text-[#1B4A77] rounded-tl-none"
-    //                     } w-fit max-w-full px-4 py-2 rounded-2xl text-sm ${msg.senderId.role === "Customer" ? "me-3 ms-8" : "ms-4 me-8"
-    //                     }`}
-    //             >
-    //                 <p
-
-    //                     className="break-words"
-    //                     style={{
-    //                         overflowWrap: "break-word", // Break long words to the next line
-    //                         wordBreak: "break-word",   // Additional support for word breaking
-    //                         maxWidth: "100%",          // Ensures content stays within container
-    //                     }}
-    //                 >{msg?.message}</p>
-    //             </div> */}
-
-    //         </div>
-    //     );
-    // };
-
-    // const ResolutionQuestion = () => (
-    //     <div className="flex flex-col items-start space-y-2 mb-4">
-    //         <div className="flex items-start space-x-2">
-    //             <div className="w-8 h-8 rounded-full bg-gray-300" />
-    //             <div className="bg-gray-100 rounded-lg px-4 py-2">
-    //                 <p>Has your issue been resolved?</p>
-    //             </div>
-    //         </div>
-    //         <div className="flex space-x-2 px-10">
-    //             <button
-    //                 onClick={() => setIsResolved(false)}
-    //                 className="px-4 py-1 w-25 border border-[#177BDA] rounded-md hover:bg-gray-100"
-    //             >
-    //                 No
-    //             </button>
-    //             <button
-    //                 onClick={() => setIsResolved(true)}
-    //                 className="px-4 py-1 w-25 border border-[#177BDA] rounded-md hover:bg-gray-100"
-    //             >
-    //                 Yes
-    //             </button>
-    //         </div>
-
-    //     </div>
-    // );
-
-    // const RatingSystem = () => (
-    //     <div className="flex flex-col items-start space-y-2">
-    //         <div className="flex items-start space-x-2">
-    //             <div className="w-8 h-8 rounded-full bg-gray-300" />
-    //             <div className="bg-gray-100 mb-2 rounded-lg px-4 py-2">
-    //                 <p>How do you Rate the speed of the support</p>
-    //             </div>
-    //         </div>
-    //         <div className="flex space-x-1 px-10 mb-4">
-    //             {[1, 2, 3, 4, 5].map((star) => (
-    //                 <button
-    //                     key={star}
-    //                     onClick={() => setRating(star)}
-    //                     className="focus:outline-none"
-    //                 >
-    //                     <Star
-    //                         color={star <= (rating) ? '#87238f' : '#D9D9D9'}
-    //                         size={24}
-    //                     />
-    //                 </button>
-    //             ))}
-    //         </div>
-    //     </div>
-    // );
-
-    return (
-
-            <div className=" flex flex-col px-3 pb-2 overflow-y-auto hide-scrollbar">
-                {/* Header Section - Fixed */}
-                <GoBackButton/>
-
-                {/* Title and Description */}
-                <div>
-                    <p className="text-center text-[#177BDA] text-2xl font-medium">Agent Chat</p>
-                    <p className="text-center my-2 text-[#919191] text-sm font-normal">
-                        Ask anything, anytime—seamless support is just a message away!
-                    </p>
-                </div>
-                <div className="p-4 flex-shrink-0">
-                    <div className="text-center">
-                        {/* <h2 className="text-[#177BDA] font-semibold text-2xl mb-2">Agent Chat</h2>
+      {/* Title and Description */}
+      <div>
+        <p className="text-center text-[#177BDA] text-2xl font-medium">
+          Agent Chat
+        </p>
+        <p className="text-center my-2 text-[#919191] text-sm font-normal">
+          Ask anything, anytime—seamless support is just a message away!
+        </p>
+      </div>
+      <div className="p-4 flex-shrink-0">
+        <div className="text-center">
+          {/* <h2 className="text-[#177BDA] font-semibold text-2xl mb-2">Agent Chat</h2>
                     <p className="text-gray-500 text-sm mb-2">
                         Ask anything, anytime—seamless support is just a message away!
                     </p> */}
-                        <div className="flex items-center justify-center mt-3">
-                            <div className="relative z-10">
-                                <OrganizationIcon />
-                            </div>
-                            {/* <div className="relative -ml-4">
-                                <img
-                                    src={men2}
-                                    alt="Second profile"
-                                    className="w-10 h-10 rounded-full"
-                                />
-                            </div> */}
-                        </div>
-                    </div>
-                </div>
+          <div className="flex items-center justify-center mt-3">
+            <div className="relative z-10">
+              <OrganizationIcon />
+            </div>
+          </div>
+        </div>
+      </div>
 
-                {/* Form Section - Scrollable */}
-                <div className="flex-grow  px-4 scrollbar-hide">
-                    {/* <style jsx>{`
-                    .scrollbar-hide::-webkit-scrollbar {
-                        display: none;
+      {/* Form Section - Scrollable */}
+      <div className="flex-grow  px-4 scrollbar-hide">
+        {!isSubmitted && ( // Render form only when isSubmitted is false
+          <form onSubmit={ticketSubmit}>
+            <div className="bg-[#F3F9FF] p-4 rounded-3xl">
+              <Input
+                label="Subject"
+                required
+                name="subject"
+                value={ticketData.subject}
+                onChange={(e) =>
+                  setTicketData((prev) => ({
+                    ...prev,
+                    subject: e.target.value,
+                  }))
+                }
+                placeholder="Subject"
+              />
+
+              <TextArea
+                required
+                label="Description"
+                name="description"
+                value={ticketData.description}
+                onChange={(e) =>
+                  setTicketData((prev) => ({
+                    ...prev,
+                    description: e.target.value,
+                  }))
+                }
+                placeholder="Description"
+              />
+              {orgData?.ticket_fields?.input?.length > 0 &&
+                orgData.ticket_fields.input.map((field: any, index: any) => (
+                  <Input
+                    key={index}
+                    label={field.label}
+                    name={field.label}
+                    value={
+                      ticketData.text.find((item) => item.label === field.label)
+                        ?.value || ""
                     }
-                    .scrollbar-hide {
-                        -ms-overflow-style: none;
-                        scrollbar-width: none;
+                    onChange={(e) =>
+                      setTicketData((prev) => {
+                        const existingText = prev.text.find(
+                          (item) => item.label === field.label
+                        );
+                        if (existingText) {
+                          return {
+                            ...prev,
+                            text: prev.text.map((item) =>
+                              item.label === field.label
+                                ? { ...item, value: e.target.value }
+                                : item
+                            ),
+                          };
+                        } else {
+                          return {
+                            ...prev,
+                            text: [
+                              ...prev.text,
+                              { label: field.label, value: e.target.value },
+                            ],
+                          };
+                        }
+                      })
                     }
-                `}</style> */}
-                    {!isSubmitted && ( // Render form only when isSubmitted is false
-                        <form onSubmit={ticketSubmit}>
-                            <div className='bg-[#F3F9FF] p-4 rounded-3xl'>
-                             <Input
-  label="Subject"
-  required
-  name="subject"
-  value={ticketData.subject}
-  onChange={(e) => setTicketData((prev) => ({ ...prev, subject: e.target.value }))}
-  placeholder="Subject"
-/>
+                    placeholder={field.placeholder || "Enter text"}
+                  />
+                ))}
 
-<TextArea
-required
-  label="Description"
-  name="description"
-  value={ticketData.description}
-  onChange={(e) => setTicketData((prev) => ({ ...prev, description: e.target.value }))}
-  placeholder="Description"
-/>
-                                {/* <label className='block text-[#495160] mb-2'>Subject 2</label>
-                                <input
-                                    type="text"
-                                    name="subject2"
-                                    placeholder='Enter'
-                                    className="w-full px-4 py-2 rounded-3xl border-2 border-gray-200 mb-4"
-                                />
-                                <label className="block text-[#495160]">Upload Attachment</label>
-                                <div className="border-2 mt-2 mb-3 border-dashed border-[#649DD6] rounded-lg p-4">
-                                    <label className="flex flex-col items-center justify-center cursor-pointer">
-                                        <Upload />
-                                        <span className="text-sm text-gray-500">Upload File</span>
-                                        <input
-                                            type="file"
-                                            className="hidden"
-                                            accept=".jpg,.png,.zip"
-                                        />
-                                    </label>
-                                </div>
-                                <p className='text-[#6D6D6D] mt-2'>Only support .jpg, png, and zip files</p>
+              {orgData?.ticket_fields?.choice?.length > 0 &&
+                moduleData.map((module) => (
+                  <Select
+                    label={module.name}
+                    placeholder="Select an option"
+                    value={
+                      ticketData.choice
+                        .filter((m) => m.label === module.name)
+                        .map((m) => m.value)[0] || ""
+                    }
+                    options={module.values}
+                    onChange={(selectedValue) => {
+                      setTicketData((prev) => {
+                        const existingModule = prev.choice.find(
+                          (m) => m.label === module.name
+                        );
+                        if (existingModule) {
+                          return {
+                            ...prev,
+                            choice: prev.choice.map((m) =>
+                              m.label === module.name
+                                ? { label: module.name, value: selectedValue }
+                                : m
+                            ),
+                          };
+                        } else {
+                          return {
+                            ...prev,
+                            choice: [
+                              ...prev.choice,
+                              { label: module.name, value: selectedValue },
+                            ],
+                          };
+                        }
+                      });
+                    }}
+                  />
+                ))}
+              {/* <label className="block text-[#495160]">Upload Attachment</label>
+              <div className="border-2 mt-2 mb-3 border-dashed border-[#649DD6] rounded-lg p-4">
+                <label className="flex flex-col items-center justify-center cursor-pointer">
+                  <Upload />
+                  <span className="text-sm text-gray-500">Upload File</span>
+                  <input
+                    type="file"
+                    className="hidden"
+                    accept=".jpg,.png,.zip"
+                  />
+                </label>
+              </div>
+              <p className="text-[#6D6D6D] mt-2">
+                Only support .jpg, png, and zip files
+              </p> */}
+           {orgData?.ticket_fields?.uploading?.length > 0&&<>
+            <label className="block text-[#495160]">Upload Attachment</label>
+             {orgData?.ticket_fields?.uploading?.length > 0&&orgData.ticket_fields.uploading.map((upload:any)=>(
+                
+               <div className="mt-3">
+                
+                <UploadInput label={upload.label} onFileSelect={handleFileUpload}/>
+               
+               </div>
+             ))}
+              <p className="text-[#6D6D6D] mt-2">Only support .jpg,.png,.zip files</p>
+           </>}
+          
 
-                                <div className="space-y-2 mt-4 bg-white p-4 rounded-2xl">
+              {/* <div className="space-y-2 mt-4 bg-white p-4 rounded-2xl">
                                     <label className="block text-gray-600 mb-2">Select Options</label>
                                     {['1', '2', '3'].map((num) => (
                                         <label key={num} className="flex items-center space-x-3 cursor-pointer">
@@ -380,104 +291,18 @@ required
                                         </label>
                                     ))}
                                 </div> */}
-                                <div className="flex justify-end mt-4">
-                                    {/* <button
-                                        type='submit'
-                                        className="bg-[#177BDA] cursor-pointer text-white w-25 py-2 px-4 rounded-lg"
-                                    >
-                                        Submit
-                                    </button> */}
-                                     <Button type='submit'>Submit</Button>
-                                </div>
-                            </div>
-                        </form>
-                    )}
 
-                    {/* Chat Messages Section */}
-                   
-                </div>
-                {/* <div className='col-span-6  px-2 flex flex-col justify-between'>
-        <div ref={chatBoxRef} className="space-y-2  h-[69vh] scroll-smooth  overflow-auto hide-scrollbar">
-        <div className='flex flex-col space-y-1  items-start w-full mb-2'>
-         <img src={droidBilly} className='w-6 h-7 rounded-full' alt="" />
-         <div className='w-fit'>
-         <div className="bg-[#262D30] w-fit px-4 mb-2 ms-4 py-2 rounded-tl-none rounded-2xl text-sm ">
-          <p >I can't answer your message</p>
-          </div> 
-          {!ticketId&&<SAFormModal organization={organization} setTicketId={setTicketId}/>}
-         </div>
-         </div>
-         
-          {
-            ticketId&&messages.length==0&&
-            <p className='ms-4 text-xs'>Our agent will connect you,wait a minute....</p>
-          }
-        
-  {messages.map((msg) => (
-    <div
-      key={msg.ticketId}
-      className={`flex flex-col space-y-1 w-full mb-2 ${
-        msg.senderId.role === 'Customer' ? "items-end" : "items-start"
-      }`}
-    >
-      { msg.senderId.role !== 'Customer' ? (
-        <img
-          src={SaImage} 
-          className="w-7 h-7 rounded-full shadow-lg bg-white "
-          alt="Sender"
-        />
-      ):
-      <OrganizationIcon/>
-      }
-     <div
-  className={`${
-    msg.senderId.role === "Customer"
-      ? "bg-[#59BEFD] text-white rounded-tr-none"
-      : "bg-[#262D30] text-white rounded-tl-none"
-  } w-fit max-w-full px-4 py-2 rounded-2xl text-sm ${
-    msg.senderId.role === "Customer" ? "me-3 ms-8" : "ms-4 me-8"
-  }`}
->
-  <p
-   
-    className="break-words"
-    style={{
-      overflowWrap: "break-word", 
-      wordBreak: "break-word",   
-      maxWidth: "100%",          
-    }}
-  >{msg?.message}</p>
-</div>
-
-    </div>
-  ))}
-</div>
-
- 
-     <form onSubmit={sendMessage} className="flex items-center justify-between space-x-2 w-full mt-2  bg-[#262D30] p-3 rounded-full">
-         
-         <img src={CygnozLogo} className='w-[22px]' alt="" />
-         
-        
-         <textarea
-         ref={textareaRef}
-  value={message}
-  onChange={(e) =>handleInput(e)}
-  onKeyDown={handleKeyDown}
-           className="bg-gray-700 text-white w-full text-sm focus:outline-none resize-none hide-scrollbar"
-           placeholder="Type Something..."
-           rows={1}
-         />
-         <div className='flex space-x-2 items-center'>
-         <button type='submit' className="w-10 h-10 flex items-center justify-center rounded-full bg-gradient-to-r from-[#69ACD6]  to-[#2A3075]"><ArrowRight stroke={2} color='white' size={20}/></button>
-         </div>
-       </form>
-        </div> */}
-
-             
+              <div className="flex justify-end mt-4">
+                <Button type="submit">Submit</Button>
+              </div>
             </div>
-        
-    );
+          </form>
+        )}
+
+        {/* Chat Messages Section */}
+      </div>
+    </div>
+  );
 };
 
 export default TicketRise;

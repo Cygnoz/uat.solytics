@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
-import { io, Socket } from "socket.io-client";
 import AgentIcon from "../../assets/icons/AgentIcon";
 import ArrowRightIcon from "../../assets/icons/ArrowRightIcon";
 import OrganizationIcon from "../../assets/icons/OrganizationIcon";
@@ -11,21 +10,21 @@ import useApi from "../../Hooks/useApi";
 import { endpoints } from "../../Services/apiEndpoints";
 import { useOrg } from "../../context/OrgContext";
 import toast from "react-hot-toast";
-const CLIENT_SOCKET_URL = import.meta.env.VITE_REACT_APP_TICKETS;
+import { useSocket } from "../../context/SocketContext";
+import TickMark from "../../assets/icons/TickMark";
 type Props = {};
 
 function TicketView({}: Props) {
   const { id } = useParams();
-  const [socket, setSocket] = useState<Socket | null>(null);
   const {setFeedBackDetails,ticketStatus}=useResponse()
   const {orgData}=useOrg()
-  // const [agentImg,setAgentImg]=useState('')
+  const {socket}=useSocket()
   const chatBoxRef: any = useRef(null);
   const textareaRef: any = useRef(null);
   const [allmessages, setAllmessages] = useState<any[]>([]);
   const [message, setMessage] = useState("");
   const { request: getChatHistory } = useApi("get", 3004); 
-  
+  // const [isOnline,setIsOnline]=useState(false)
   function formatTime(isoString: any) {
     const date = new Date(isoString);
     let hours = date.getHours();
@@ -45,7 +44,7 @@ function TicketView({}: Props) {
           msg?.senderId?.role === "Customer" ? "items-end" : "items-start"
         }`}
       >
-        {msg.senderId.role !== "Customer" ? (
+        {msg?.senderId?.role !== "Customer" ? (
           <div className="flex justify-end items-center gap-2 ms-4">
             <p className="text-xs font-bold text-[#4B5C79]">{allmessages[0]?.senderId?.name ||"Agent"}</p>
             <p className="text-xs text-gray-500  ">
@@ -65,11 +64,11 @@ function TicketView({}: Props) {
 
         <div
           className={`${
-            msg.senderId.role === "Customer"
-              ? "bg-[#59BEFD] text-white rounded-br-none"
-              : "bg-[#F2F2F2] text-[#1B4A77] rounded-bl-none"
-          } w-fit max-w-full px-4 py-2 rounded-2xl text-sm ${
-            msg.senderId.role === "Customer" ? "me-3 ms-8" : "ms-4 me-8"
+            msg.senderId?.role === "Customer"
+              ? "bg-[#59BEFD] text-white rounded-br-none px-2 py-1"
+              : "bg-[#F2F2F2] text-[#1B4A77] rounded-bl-none p-2"
+          } w-fit max-w-full  rounded-2xl text-sm ${
+            msg.senderId?.role === "Customer" ? "me-3 ms-8" : "ms-4 me-8"
           }`}
         >
           <p
@@ -82,9 +81,17 @@ function TicketView({}: Props) {
           >
             {msg?.message}
           </p>
+          {msg.senderId?.role === "Customer" &&  <div className="flex items-center justify-end space-x-1">
+   
+   {msg?.isRead ?
+    <TickMark isRead={true}/>
+   : 
+   <TickMark isRead={false}/>}
+  
+</div>}
         </div>
 
-        {msg.senderId.role !== "Customer" ? (
+        {msg.senderId?.role !== "Customer" ? (
          <AgentIcon agentImg={allmessages[0]?.senderId?.image ||""}  height={7} width={7}/>
         ) : (
           <OrganizationIcon height={7} width={7}/>
@@ -120,13 +127,14 @@ function TicketView({}: Props) {
       const messageBody = {
         ticketId: id,
         senderId:orgData?.orgEmail,
-        receiverId: allmessages[0]?.senderId,
+        receiverId: allmessages[0]?.senderId?._id,
         message,
+        role:"Customer"
       };
-  
       socket.emit("sendMessage", messageBody);
+      socket.emit("getUnreadCount",{ _id:allmessages[0]?.senderId})
       setMessage("");
-  
+      
   
       if (textareaRef.current) {
         textareaRef.current.style.height = "19px";
@@ -160,38 +168,48 @@ function TicketView({}: Props) {
      })
      }
   }, [allmessages]);
-  useEffect(() => {
-    getChatHis();
-    const newSocket = io(CLIENT_SOCKET_URL);
-    setSocket(newSocket);
 
+  useEffect(() => {
+    getChatHis()
+    socket.emit("joinRoom", id,orgData?.orgEmail);
+    socket.on("roomUsers", (users) => {
+      console.log("Users in room:", users);
   
-    newSocket.emit("joinRoom", id);
-    newSocket.emit("messageRead", { ticketId: id, role: "Customer" });
-    newSocket.on("chatHistory", (chatHistory: any) => {
-      setAllmessages(chatHistory);
-    });
-  
-    newSocket.on("newMessage", (newMessage: any) => {
-      setAllmessages((allMsg) => {
-        const updatedMessages = [...allMsg, newMessage];
-      
-      
-      
-        return updatedMessages;
-      });
-      
-    });
-  
-    newSocket.on("disconnect", () => {
-    
-    });
+      if (users.length > 1) {
+        // setIsOnline(true)
+          console.log("Both users are in the room");
+          setAllmessages((prevMessages) =>
+            prevMessages.map((msg: any) =>
+              msg.receiverId?._id === prevMessages[0]?.senderId?._id
+                ? { ...msg, isRead: true }
+                : msg
+            )
+          );
+          socket.emit("markAsRead",orgData?.orgEmail,id)
+      }else{
+        // setIsOnline(false)
+      }
+  });
    
-    return () => {
-      newSocket.disconnect();
+
+    const handleNewMessage = (newMessage: any) => {
+      setAllmessages((prev) => [...prev, newMessage]);
     };
+
    
+    socket.on("newMessage", handleNewMessage);
+
+    return () => {
+      socket.emit("leaveRoom", { ticketId:id, userId:orgData?.orgEmail });
+      socket.off("newMessage", handleNewMessage);
+    };
   }, [id]);
+
+  // useEffect(()=>{
+  //   if(isOnline){
+  //     getChatHis()
+  //    }
+  // },[isOnline])
 
 
   console.log("dd",allmessages);
@@ -200,21 +218,21 @@ function TicketView({}: Props) {
 
 
   // useEffect(() => {
-  //   const newSocket = io(CLIENT_SOCKET_URL);
-  //   setSocket(newSocket);
+  //   const socket = io(CLIENT_SOCKET_URL);
+  //   setSocket(socket);
 
-  //   newSocket.emit("joinRoom", id);
+  //   socket.emit("joinRoom", id);
 
-  //   newSocket.on("chatHistory", (chatHistory: any) => {
+  //   socket.on("chatHistory", (chatHistory: any) => {
   //     setAllmessages(chatHistory);
   //   });
 
-  //   newSocket.on("newMessage", (newMessage: any) => {
+  //   socket.on("newMessage", (newMessage: any) => {
   //     setAllmessages((prev) => [...prev, newMessage]);
   //   });
 
   //   return () => {
-  //     newSocket.disconnect();
+  //     socket.disconnect();
   //   };
   // }, [id]);
 
@@ -236,7 +254,7 @@ function TicketView({}: Props) {
                     </p>
                 </div>)}
          
-                    <div className={`text-center ${(allmessages?.length ?? 0) <= 6&&'mt-3'}` }>
+                    <div className={`text-center ${(allmessages?.length ?? 0) <= 6&&'mt-3'} flex justify-center items-center flex-col` }>
                         {/* <h2 className="text-[#177BDA] font-semibold text-2xl mb-2">Agent Chat</h2>
                     <p className="text-gray-500 text-sm mb-2">
                         Ask anything, anytime—seamless support is just a message away!
@@ -249,6 +267,10 @@ function TicketView({}: Props) {
                                <AgentIcon agentImg={allmessages[0]?.senderId?.image ||""}/>
                             </div>}
                         </div>
+                       {/* {allmessages?.length>0&& <div className="flex items-center space-x-2">
+  <div className={`w-3 h-3 rounded-full ${isOnline ? "bg-green-500" : "bg-red-500"}`} />
+  <p>{isOnline ? "Online" : "Offline"}</p>
+</div>} */}
                     </div>
              
       {allmessages?.length > 0 ? (
