@@ -10,7 +10,7 @@ function NewChatBot({ }: Props) {
     const [activeTab, setActiveTab] = useState("Agent");
 
     return (
-        <div className="bg-[#F2F4F7]">
+        <div className="bg-[#F2F4F7] min-h-screen">
             <div className="px-4 sm:px-6 md:px-10 py-3">
                 <div className="flex gap-2 flex-wrap">
                     <a className="text-[#9747FF] text-[18px] font-[700]" href="/dashboard">Chatbots</a>

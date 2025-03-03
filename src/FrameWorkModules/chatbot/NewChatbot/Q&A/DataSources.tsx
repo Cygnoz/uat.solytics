@@ -33,18 +33,18 @@ function DataSources({ page }: Props) {
                                 type="text"
                             />
                             <button className="bg-[#9747FF] text-white w-full sm:w-32 text-[14px] rounded-md sm:rounded-r-md">
-                                Fetch links
+                                Fetch link
                             </button>
                         </div>
                         <div className="flex gap-3 py-3">
-                            <input
+                            {/* <input
                                 className="py-2 bg-[#F2F4F7] px-2 rounded-md w-full focus:outline-none"
                                 placeholder="https://www.example.com"
                                 type="text"
                             />
                             <button className="">
                                 <img src={deleteIcon} alt="Delete Icon" />
-                            </button>
+                            </button> */}
                         </div>
                     </div>
                     <div className="flex justify-end gap-3 sm:gap-5 mt-5">

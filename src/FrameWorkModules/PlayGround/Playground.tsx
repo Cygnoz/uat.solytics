@@ -12,13 +12,31 @@ import back from '../../assets/FrameIcons/backIcon.png'
 import { Box, Modal } from '@mui/material'
 import { useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { useChatbot } from '../../context/ChatbotContext'
+import axiosInstance from '../../Services/axiosInstance';
+import { endpoints } from '../../Services/apiEndpoints';
+import { toast, Toaster } from 'react-hot-toast';
 
 type Props = {}
 
 function Playground({ }: Props) {
     const [open, setOpen] = useState(false);
     const [activeTheme, setActiveTheme] = useState("WhiteTheme"); // Active theme
-    const [selectedTheme, setSelectedTheme] = useState("WhiteTheme"); // Temporary selected theme
+    const [selectedTheme, setSelectedTheme] = useState("WhiteTheme");
+    const { chatbotData, updateChatbotData } = useChatbot();
+
+    const getThemeColors = (themeName: string) => {
+        switch (themeName) {
+            case "WhiteTheme":
+                return { backgroundColor: '#FFFFFF', textColor: '#1A243B' };
+            case "DarkTheme":
+                return { backgroundColor: '#000000', textColor: '#FFFFFF' };
+            case "SoftBlue":
+                return { backgroundColor: '#D5DBED', textColor: '#1A243B' };
+            default:
+                return { backgroundColor: '#FFFFFF', textColor: '#1A243B' };
+        }
+    };
 
     const location = useLocation();
     const navigate = useNavigate();
@@ -27,18 +45,91 @@ function Playground({ }: Props) {
     // console.log('Bot Data:-', botData);
 
     const handleThemeChange = (event: any) => {
-        setSelectedTheme(event.target.value); // Update the temporary state
-        console.log("Selected Theme:", event.target.value);
+        const newTheme = event.target.value;
+        setSelectedTheme(newTheme);
     };
 
-    const handleSave = () => {
-        setActiveTheme(selectedTheme); // Confirm and set the active theme
-        setOpen(false); // Close the dialog (if applicable)
-        console.log("Active Theme Saved:", selectedTheme);
+    const applyTheme = () => {
+        const newThemeColors = getThemeColors(selectedTheme);
+        setActiveTheme(selectedTheme);
+
+        updateChatbotData({
+            ...chatbotData,
+            theme: newThemeColors
+        });
+
+        console.log('Theme updated to:', newThemeColors);
+        setOpen(false);
+    };
+
+
+    const themeStyles = chatbotData && chatbotData.theme
+        ? chatbotData.theme
+        : getThemeColors(activeTheme);
+
+    const handleSave = async () => {
+        try {
+            const themeColors = chatbotData.theme || getThemeColors(selectedTheme);
+            updateChatbotData({
+                theme: themeColors, // Ensure theme is updated
+                boat_iframeurl: `http://localhost:5173/main/${chatbotData.name}/`
+                // botUrl: frameworkData.boat_iframeurl
+            });
+
+            const frameworkData = {
+                project_name: chatbotData.name,
+                // boat_name: chatbotData.name,
+                description: chatbotData.description,
+                domain: chatbotData.domain || '',
+                boat_iframeurl: chatbotData.boat_iframeurl,
+                theme: {
+                    backgroundColor: chatbotData.theme?.backgroundColor,
+                    textColor: chatbotData.theme?.textColor
+                },
+
+                ticket_fields: {
+                    input: chatbotData.ticketFields?.filter(field => field.type === 'text').map(field => ({
+                        label: field.title,
+                        placeholder: field.content
+                    })) || [],
+                    choice: chatbotData.ticketFields?.filter(field => field.type === 'choice').map(field => ({
+                        label: field.title,
+                        options: Array.isArray(field.content) ? field.content : []
+                    })) || []
+                },
+                agent: chatbotData.selectedFeatures?.includes('agent') || false,
+                qa: chatbotData.selectedFeatures?.includes('qa') || false,
+                insight: chatbotData.selectedFeatures?.includes('insight') || false,
+                upload: chatbotData.upload || false,
+                ticketSubject: chatbotData.ticketSubject || '',
+                ticketDescription: chatbotData.ticketDescription || ''
+            };
+
+            console.log('Chatbot data=:', chatbotData);          
+            console.log('Framework data=:', frameworkData);
+
+            const response = await axiosInstance.authInstance(5001).post(
+                endpoints.CREATE_FRAMEWORK,
+                frameworkData
+            );
+            console.log('Response from backend:', response.data);
+            console.log('framework = ', frameworkData);
+
+            if (response.data) {
+                toast.success('Framework saved successfully!', { duration: 2000 });
+                setTimeout(() => {
+                    navigate('/playground2', { state: { iframeUrl: frameworkData.boat_iframeurl } });
+                },1500);
+            }
+        } catch (error) {
+            toast.error('Failed to save framework');
+            console.error('Error saving framework:', error);
+        }
     };
 
     return (
         <div className="bg-[#F2F4F7] pb-5">
+            <Toaster position='top-center'/>
             <div className="px-10 py-3 flex gap-2">
                 <Link to={"/addchatbot"}>
                     <img src={back} className='w-7 h-7  mt-0.5' alt="" />
@@ -80,44 +171,36 @@ function Playground({ }: Props) {
                                     </button>
                                 </div>
                             </div>
-                            <div className={`px-6 pb-[60%] ${activeTheme === "WhiteTheme"
-                                ? "bg-white"
-                                : activeTheme === "DarkTheme"
-                                    ? "bg-[#000000]"
-                                    : "bg-[#D5DBED]"
-                                }`}>
+                            <div className={`px-6 pb-[60%]`}
+                                style={{
+                                    backgroundColor: themeStyles.backgroundColor,
+                                    color: themeStyles.textColor
+                                }}>
                                 <div className="w-[80%]">
                                     <div className="flex gap-1 pt-3">
                                         <div className="border border-2-[#F2F4F7] w-5 bg-white rounded-full p-1">
                                             <img src={profile} alt="" />
                                         </div>
-                                        <p
-                                            className={`text-[7px] pt-1 font-[600] ${activeTheme === "WhiteTheme"
-                                                ? "text-[#62697B]"
-                                                : activeTheme === "DarkTheme"
-                                                    ? "text-white"
-                                                    : "text-black"
-                                                }`}
-                                        >Billie Bot</p>
+                                        <p className={`text-[7px] pt-1 font-[600]`} style={{ color: themeStyles.textColor }}>
+                                            Billie Bot
+                                        </p>
                                     </div>
-                                    <div
-                                        className={` rounded-2xl p-1 mt-1 ${activeTheme === "WhiteTheme"
-                                            ? "text-[#1A243B] border border-2-[#F2F4F7]"
-                                            : activeTheme === "DarkTheme"
-                                                ? "bg-[#4D4D4D] text-white"
-                                                : "bg-[#B5C0D0] text-[#1A243B] border border-2-[#F2F4F7]"
-                                            }`}>
-                                        <p className=' text-[10px] px-2 font-[400]'>How can I assist you ?</p>
+                                    <div className={`rounded-2xl p-1 mt-1`}
+                                        style={{
+                                            backgroundColor: activeTheme === "WhiteTheme" ? "#FFFFFF" :
+                                                activeTheme === "DarkTheme" ? "#4D4D4D" : "#B5C0D0",
+                                            color: themeStyles.textColor,
+                                            border: activeTheme !== "DarkTheme" ? "1px solid #F2F4F7" : "none"
+                                        }}>
+                                        <p className='text-[10px] px-2 font-[400]'>How can I assist you ?</p>
                                     </div>
                                     <div className="text-end">
-                                        <p
-                                            className={`text-[7px] py-0.5 ${activeTheme === "SoftBlue"
-                                                ? "text-[#7b7272]"
-                                                : " text-[#c2c3c4]"
-                                                }`}>Today 11:42</p>
+                                        <p className={`text-[7px] py-0.5`}
+                                            style={{ color: activeTheme === "SoftBlue" ? "#7b7272" : "#c2c3c4" }}>
+                                            Today 11:42
+                                        </p>
                                     </div>
                                 </div>
-
                             </div>
                             <div
                                 className={` flex justify-between px-4 py-5 rounded-b-xl ${activeTheme === "WhiteTheme"
@@ -163,7 +246,8 @@ function Playground({ }: Props) {
                     </Link>
                     <button
                         className="bg-[#9747FF] px-5 py-2 rounded-lg text-white"
-                        onClick={() => navigate('/playground2', { state: { botData: botData } })}
+                        onClick={handleSave}
+                    // onClick={() => navigate('/playground2', { state: { botData: botData } })}
                     >
                         Save & Next
                     </button>
@@ -242,9 +326,9 @@ function Playground({ }: Props) {
                             </button>
                             <button
                                 className="bg-[#9747FF] rounded-lg text-white px-6 sm:px-8 py-2"
-                                onClick={handleSave}
+                                onClick={applyTheme}
                             >
-                                Save
+                                Apply
                             </button>
                         </div>
                     </div>
