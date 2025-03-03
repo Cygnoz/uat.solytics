@@ -12,11 +12,10 @@ interface ChatbotCardProps {
   boat_iframeurl: string;
   port_number: number;
   project_name: string;
-  qa: string;
   tags?: string[]; 
 }
 
-const ChatbotCard: React.FC<ChatbotCardProps> = ({ boat_name,description, port_number, tags = [] }) => {
+const ChatbotCard: React.FC<ChatbotCardProps> = ({ boat_name,description, boat_iframeurl, tags = [] }) => {
   return (
     <div className="bg-white p-6 w-93 gap-8 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
       <div className="flex items-start gap-4">
@@ -24,7 +23,7 @@ const ChatbotCard: React.FC<ChatbotCardProps> = ({ boat_name,description, port_n
           <img className="w-8 h-8" src={chat_bubble} alt="" />
           <h3 className="font-medium text-gray-900 mt-2 mb-1">{boat_name}</h3>
           <p className="text-gray-500 text-sm mb-4">{description}</p>
-          <p className="text-gray-500 text-sm mb-4">Port: {port_number}</p>
+          <p className="text-gray-500 text-sm mb-4">{boat_iframeurl}</p>
         </div>
       </div>
       <hr className="border-t border-gray-200 my-5 -mx-6" />
@@ -52,6 +51,7 @@ const ChatbotDashboard = () => {
   const [chatbots, setChatbots] = useState<ChatbotCardProps[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [chatbotNames, setChatbotNames] = useState([]);
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
@@ -75,7 +75,10 @@ const ChatbotDashboard = () => {
           tags: ['agent chat'], 
         }));
 
+        const names = response.data.frameworks.map((framework:any) => framework.boat_name)
+
         setChatbots(transformedChatbots);
+        setChatbotNames(names)
         setLoading(false);
       } catch (err) {
         setError('Failed to load chatbots. Please try again later.');
@@ -105,7 +108,10 @@ const ChatbotDashboard = () => {
               <img src={plus} alt="" />
               New Chatbot
             </button>
-            <NewChatModal isOpen={isModalOpen} onClose={closeModal} />
+            <NewChatModal
+             isOpen={isModalOpen} 
+             onClose={closeModal} 
+             existingChatbotNames={chatbotNames}/>
           </div>
         </div>
 
@@ -123,7 +129,6 @@ const ChatbotDashboard = () => {
                 boat_iframeurl={chatbot.boat_iframeurl}
                 port_number={chatbot.port_number}
                 project_name={chatbot.project_name}
-                qa={chatbot.qa}
                 tags={chatbot.tags}
               />
             ))}

@@ -1,6 +1,7 @@
 import { Route, Routes, useLocation } from 'react-router-dom';
 import './App.css';
 import Footer from './layout/Footer';
+import Header from './layout/Header';
 import { Toaster } from 'react-hot-toast';
 import MainPage from './SupportModules/Home/MainPage';
 import HelpPage from './SupportModules/Help/HelpPage';
@@ -14,6 +15,8 @@ import NewChatBot from './FrameWorkModules/chatbot/NewChatbot/NewChatBot';
 import Playground from './FrameWorkModules/PlayGround/Playground';
 import PlaygroundConnect from './FrameWorkModules/PlayGround/Connect/PlaygroundConnect';
 import { Navlist } from './components/Navlist/Navlist';
+import { ChatbotProvider } from './context/ChatbotContext';
+
 
 
 const routeComponents: { [key: string]: JSX.Element } = {
@@ -25,9 +28,12 @@ const routeComponents: { [key: string]: JSX.Element } = {
   "/ticket-view/:id": <TicketView />,
 };
 
+const routesWithHeader = ['/dashboard', '/addchatbot', '/playground', '/playground2'];
+
 function App() {
   const location = useLocation();
   const currentPath = location.pathname;
+  const showHeader = routesWithHeader.includes(currentPath);
 
   const isWrappedRoute = Navlist.some(({ basePath, subPath }) =>
     [basePath, ...subPath].some(path => 
@@ -74,6 +80,7 @@ function App() {
     //   )}
     // </>
     <>
+    
     {isWrappedRoute ? (
       <div className="w-full h-[98vh]">
         <div className="bg-white rounded-xl shadow-2xl flex flex-col h-full">
@@ -98,6 +105,8 @@ function App() {
       </div>
     ) : (
       <div>
+        {showHeader && <Header />}
+        <ChatbotProvider>
         <Routes>
           <Route path="/" element={<Login />} />
           <Route path="/dashboard" element={<ChatbotDashboard />} />
@@ -105,6 +114,8 @@ function App() {
           <Route path="/playground" element={<Playground />} />
           <Route path="/playground2" element={<PlaygroundConnect />} />
         </Routes>
+        </ChatbotProvider>
+        
       </div>
     )}
     <Toaster reverseOrder={false} />

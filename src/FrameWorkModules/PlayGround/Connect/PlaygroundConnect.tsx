@@ -5,15 +5,17 @@ import share from "../../../assets/FrameIcons/share.png";
 import Connect from "./Connect";
 import rightArrow from "../../../assets/FrameIcons/chevron-right.png";
 import { useLocation } from "react-router-dom";
+import { useChatbot } from "../../../context/ChatbotContext";
 
 
 
 function PlaygroundConnect() {
     const [secondActiveTab, setSecondActiveTab] = useState("embedded");
+    const { chatbotData } = useChatbot();
     const location = useLocation();
     const botUrl = location.state?.botData;
-
-    console.log('Bot Data=:', botUrl);
+    
+    {console.log("data = ",chatbotData)}
 
     const getTabClass = (tab: string) =>
         `flex gap-2 items-start rounded-3xl p-5 cursor-pointer ${secondActiveTab === tab ? "bg-[#6229AB] text-[#F2F2F2]" : "bg-white"
@@ -70,7 +72,8 @@ function PlaygroundConnect() {
                 </div>
 
                 <div className="mt-5">
-                    {secondActiveTab === "embedded" && <Connect page="embedded" botUrl={botUrl}/>}
+                    {secondActiveTab === "embedded" && <Connect page="embedded" botUrl={chatbotData.boat_iframeurl} />}
+                    
                     {secondActiveTab === "share" && <Connect page="share" />}
                     {secondActiveTab === "integration" && <Connect page="integration" />}
                 </div>
