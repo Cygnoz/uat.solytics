@@ -1,7 +1,7 @@
 import urlIcon from "../../../../assets/FrameIcons/urlIcon.png"
 import fileIcon from "../../../../assets/FrameIcons/fileUploadIcon.png"
 import textIcon from "../../../../assets/FrameIcons/TextIcon.png"
-import deleteIcon from "../../../../assets/FrameIcons/deleteIcon.png"
+// import deleteIcon from "../../../../assets/FrameIcons/deleteIcon.png"
 import upload from "../../../../assets/FrameIcons/uploadIcon.png"
 import { Link } from "react-router-dom"
 

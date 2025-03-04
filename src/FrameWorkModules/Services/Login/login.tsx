@@ -187,7 +187,7 @@ import React, { useState } from 'react';
 import { toast } from 'react-hot-toast';
 import Eye from '../../../assets/FrameIcons/Eye';
 import EyeOff from '../../../assets/FrameIcons/EyeOff';
-import { useNavigate } from 'react-router-dom';
+// import { useNavigate } from 'react-router-dom';
 import bgImg from '../../../assets/FrameImages/Group33.png';
 import groupImg from '../../../assets/FrameImages/GroupImgLogin.png';
 
@@ -195,9 +195,9 @@ function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);

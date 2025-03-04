@@ -120,6 +120,8 @@ const AgentChat: React.FC = () => {
                     type: "choice"
                 }))
             }
+            console.log(chatbotData,ticket_fields);
+            
 
             // Prepare the complete payload to match backend schema
             // const frameworkData = {

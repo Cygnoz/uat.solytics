@@ -11,7 +11,7 @@ import back from '../../assets/FrameIcons/backIcon.png'
 
 import { Box, Modal } from '@mui/material'
 import { useState } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useChatbot } from '../../context/ChatbotContext'
 import axiosInstance from '../../Services/axiosInstance';
 import { endpoints } from '../../Services/apiEndpoints';
@@ -38,9 +38,9 @@ function Playground({ }: Props) {
         }
     };
 
-    const location = useLocation();
+    // const location = useLocation();
     const navigate = useNavigate();
-    const botData = location.state?.botData;
+    // const botData = location.state?.botData;
 
     // console.log('Bot Data:-', botData);
 

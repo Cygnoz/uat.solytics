@@ -4,7 +4,7 @@ import integration from "../../../assets/FrameIcons/integration.png";
 import share from "../../../assets/FrameIcons/share.png";
 import Connect from "./Connect";
 import rightArrow from "../../../assets/FrameIcons/chevron-right.png";
-import { useLocation } from "react-router-dom";
+// import { useLocation } from "react-router-dom";
 import { useChatbot } from "../../../context/ChatbotContext";
 
 
@@ -12,8 +12,8 @@ import { useChatbot } from "../../../context/ChatbotContext";
 function PlaygroundConnect() {
     const [secondActiveTab, setSecondActiveTab] = useState("embedded");
     const { chatbotData } = useChatbot();
-    const location = useLocation();
-    const botUrl = location.state?.botData;
+    // const location = useLocation();
+    // const botUrl = location.state?.botData;
     
     {console.log("data = ",chatbotData)}
 

@@ -5,6 +5,7 @@ export const endpoints={
     GET_FRAMEWORK: "/get_framework",
     GET_ALL_FRAMEWORKS: '/get_all_frameworks',
     CREATE_FRAMEWORK: '/create_framework',
+    LOGIN: '/login',
     // Chat History
    CHAT_HISTORY:'/history',
     CHATS_LEAD:'/chats/lead',

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import chat_bubble from '../../../assets/FrameIcons/chat_bubble.png';
 import lock from '../../../assets/FrameIcons/lock.png';
 import insight from '../../../assets/FrameImages/insight.png';
@@ -20,7 +20,7 @@ const FeatureSelectionModal: React.FC<ModalProps> = ({ isOpen, onClose, existing
   const [chatbotName, setChatbotName] = useState('');
   const [chatbotDescription, setChatbotDescription] = useState('');
   const [chatbotDomain, setChatbotDomain] = useState('');
-  const [botIcon, setBotIcon] = useState<File | null>(null);
+  const [, setBotIcon] = useState<File | null>(null);
   const [nameError, setNameError] = useState<string>('');
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const { updateChatbotData } = useChatbot();
