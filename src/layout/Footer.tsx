@@ -5,7 +5,6 @@ import MessageIcon from "../assets/icons/MessageIcon";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Navlist } from "../components/Navlist/Navlist";
 import { useOrg } from "../context/OrgContext";
-import toast from "react-hot-toast";
 import { useSocket } from "../context/SocketContext";
 type Props = {};
 
@@ -30,14 +29,14 @@ const Footer = ({}: Props) => {
     }, [location]);
 
    useEffect(() => {
-    if (orgData?.orgEmail) {
-         socket.emit("joinNotificationRoom", orgData.orgEmail);
+    if (orgData?.email) {
+         socket.emit("joinNotificationRoom", orgData?.email);
          socket.on("unreadCountUpdate",(count)=>{
            console.log("count",count);
            setNotification(count)
          })
        }
-   }, [orgData?.orgEmail]);
+   }, [orgData?.email]);
     
     
     

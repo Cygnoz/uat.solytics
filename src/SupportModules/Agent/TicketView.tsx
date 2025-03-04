@@ -126,7 +126,7 @@ function TicketView({}: Props) {
     if (message.trim() && message.length > 0 && socket) {
       const messageBody = {
         ticketId: id,
-        senderId:orgData?.orgEmail,
+        senderId:orgData?.email,
         receiverId: allmessages[0]?.senderId?._id,
         message,
         role:"Customer"
@@ -171,7 +171,7 @@ function TicketView({}: Props) {
 
   useEffect(() => {
     getChatHis()
-    socket.emit("joinRoom", id,orgData?.orgEmail);
+    socket.emit("joinRoom", id,orgData?.email);
     socket.on("roomUsers", (users) => {
       console.log("Users in room:", users);
   
@@ -185,7 +185,7 @@ function TicketView({}: Props) {
                 : msg
             )
           );
-          socket.emit("markAsRead",orgData?.orgEmail,id)
+          socket.emit("markAsRead",orgData?.email,id)
       }else{
         // setIsOnline(false)
       }
@@ -200,7 +200,7 @@ function TicketView({}: Props) {
     socket.on("newMessage", handleNewMessage);
 
     return () => {
-      socket.emit("leaveRoom", { ticketId:id, userId:orgData?.orgEmail });
+      socket.emit("leaveRoom", { ticketId:id, userId:orgData?.email });
       socket.off("newMessage", handleNewMessage);
     };
   }, [id]);

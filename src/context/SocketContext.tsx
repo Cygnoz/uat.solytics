@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { io, Socket } from "socket.io-client";
-import { useOrg } from "./OrgContext";
 
 // Ensure environment variable is loaded
 const AGENT_SOCKET_URL = import.meta.env.VITE_REACT_APP_TICKETS;
@@ -10,8 +9,13 @@ if (!AGENT_SOCKET_URL) {
 }
 
 // Create the socket instance
-export const socket: Socket = io(AGENT_SOCKET_URL);
+export const socket: Socket = io(AGENT_SOCKET_URL, {
+  path: "/nexsell-tickets/socket.io/",
+  transports: ["websocket", "polling"],
+  withCredentials: true,
+});
 
+// export const socket: Socket = io(AGENT_SOCKET_URL);
 // Create Context
 const SocketContext = createContext<{
   socket: Socket;

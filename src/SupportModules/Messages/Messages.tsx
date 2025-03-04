@@ -14,15 +14,12 @@ import NoRecords from "../../components/Ui/NoRecords";
 import SearchBar from "../../components/Ui/SearchBar";
 import { SkeletonCard } from "../../components/Skeltons/MessagesSkelton";
 import Star from "../../assets/icons/Star";
-import { io } from "socket.io-client";
 import { socket } from "../../context/SocketContext";
 
-const AGENT_SOCKET_URL = import.meta.env.VITE_REACT_APP_TICKETS;
 
 const Messages = () => {
   const navigate = useNavigate();
   const { request: getClientHis } = useApi("get", 3004);
-  const { request: getaTicket } = useApi("get", 3004);
   const [isModal, setIsModal] = useState(false);
   const {setFeedBackDetails}=useResponse()
   const handleModalToggle = (agentId?:string,clientId?:string,ticketId?:string) => {
@@ -85,7 +82,7 @@ const Messages = () => {
 
   // const getClientHistory=async()=>{
   //   try{
-  //     const {response,error}=await getClientHis(`${endpoints.CHATS_LEAD}/${orgData?.orgEmail}`)
+  //     const {response,error}=await getClientHis(`${endpoints.CHATS_LEAD}/${orgData?.email}`)
   //     if(response &&!error){
   //       console.log("res",response.data);
   //     }else{
@@ -102,7 +99,7 @@ const Messages = () => {
       setLoading(true); // Start loading before the API call
   
       const { response, error } = await getClientHis(
-        `${endpoints.CHATS_LEAD}/${orgData?.orgEmail}`
+        `${endpoints.CHATS_LEAD}/${orgData?.email}`
       );
   
       if (error) {
@@ -146,7 +143,7 @@ const Messages = () => {
   );
 
   useEffect(() => {
-   if(orgData?.orgEmail){
+   if(orgData?.email){
     getClientHistory();
    }
     setTicketStatus("")
@@ -170,7 +167,7 @@ const Messages = () => {
     });
      
   }, [orgData]);
-
+  console.log("org",orgData);
   return (
     <>
       <div className=" px-3 pb-4 relative">

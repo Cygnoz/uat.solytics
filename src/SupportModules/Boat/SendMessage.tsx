@@ -17,6 +17,7 @@ import MonthlyWiseIcon from "../../assets/icons/MonthlyWiseIcon";
 import YearlySaleIcon from "../../assets/icons/YearlySaleIcon";
 import QuarterlySaleIcon from "../../assets/icons/QuarterlySaleIcon";
 import GoBackButton from "../../components/Ui/GoBackButton";
+import { useOrg } from "../../context/OrgContext";
 
 type Props = {};
 
@@ -25,7 +26,7 @@ const SendMessage = ({ }: Props) => {
   const [selectedInsight, setSelectedInsight] = useState<string | null>(null);
   const [selectedSales, setSelectedSales] = useState<string | null>(null);
   const [selectedTimePeriod, setSelectedTimePeriod] = useState<string | null>(null);
-
+  const {orgData}=useOrg()
   const resetAllStates = () => {
     setSelectedOption(null);
     setSelectedInsight(null);
@@ -66,43 +67,51 @@ const SendMessage = ({ }: Props) => {
         </div>
 
 
-        <div className="flex gap-6 px-4">
+        <div
+  className={`grid ${orgData?.insight ? 'grid-cols-2' : 'grid-cols-1'} gap-6 px-4`}
+>
+  <div
+    className="bg-cover bg-center bg-no-repeat h-[220px] rounded-lg p-4 relative justify-center"
+    style={{ backgroundImage: `url(${assistBg})`, minHeight: '100px' }}
+  >
+    <div>
+      <StarVectorIcon />
+    </div>
+    <p className="py-6 text-[#01182A] text-lg font-medium">Billie Assist</p>
+    <p className="mb-4 text-[#1A4B7E] text-xs font-normal">
+      Activate support to access help, guides, and personalized assistance.
+    </p>
+    <div
+      className="bg-[#FFFFFF] rounded-sm mt-4 p-1 flex justify-center cursor-pointer"
+      onClick={() => setSelectedOption("Billie Assist")}
+    >
+      <button className="text-[#177BDA] text-sm font-medium">Let's go</button>
+    </div>
+  </div>
 
-          <div className="bg-cover bg-center bg-no-repeat w-52 h-[220px] rounded-lg p-4 relative justify-center"
-            style={{ backgroundImage: `url(${assistBg})`, minHeight: '100px' }}>
-            <div>
-              <StarVectorIcon />
-            </div>
-            <p className="py-6 text-[#01182A] text-lg font-medium">Billie Assist</p>
-            <p className="mb-4 text-[#1A4B7E] text-xs font-normal">
-              Activate support to access help, guides, and personalized assistance.
-            </p>
-            <div
-              className="bg-[#FFFFFF] rounded-sm mt-4 p-1 flex justify-center cursor-pointer"
-              onClick={() => setSelectedOption("Billie Assist")}
-            >
-              <button className="text-[#177BDA] text-sm font-medium">Let's go</button>
-            </div>
-          </div>
+  {orgData?.insight && (
+    <div
+      className="bg-cover bg-center bg-no-repeat h-[220px] rounded-lg p-4 relative justify-center"
+      style={{ backgroundImage: `url(${insightBg})`, minHeight: '100px' }}
+    >
+      <div>
+        <BulbIcon />
+      </div>
+      <p className="py-7 text-[#01182A] text-lg font-medium">Billie Insight</p>
+      <p className="mb-4 text-[#1A4B7E] text-xs font-normal">
+        Activate support to access help, guides, and personalized assistance.
+      </p>
+      <div
+        className="bg-[#FFFFFF] rounded-sm mt-4 p-1 cursor-pointer flex justify-center"
+        onClick={() => setSelectedOption("Billie Insight")}
+      >
+        <button className="text-[#177BDA] text-sm font-medium">Let's go</button>
+      </div>
+    </div>
+  )}
+</div>
 
 
-          <div className="bg-cover bg-center bg-no-repeat w-52 h-[220px] rounded-lg p-4 relative justify-center"
-            style={{ backgroundImage: `url(${insightBg})`, minHeight: '100px' }}>
-            <div>
-              <BulbIcon />
-            </div>
-            <p className="py-7 text-[#01182A] text-lg font-medium">Billie Insight</p>
-            <p className="mb-4 text-[#1A4B7E] text-xs font-normal">
-              Activate support to access help, guides, and personalized assistance.
-            </p>
-            <div
-              className="bg-[#FFFFFF] rounded-sm mt-4 p-1 cursor-pointer flex justify-center"
-              onClick={() => setSelectedOption("Billie Insight")}
-            >
-              <button className="text-[#177BDA] text-sm font-medium">Let's go</button>
-            </div>
-          </div>
-        </div>
 
         {/* Add a 100px height space only when no option is selected */}
         {!selectedOption && <div className="h-[170px]"></div>}

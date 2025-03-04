@@ -40,7 +40,7 @@ const TicketRise = () => {
   const { request: riseTicket } = useApi("post", 3004);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [ticketData, setTicketData] = useState({
-    requester: orgData?.orgEmail || "",
+    requester: orgData?.email || "",
     subject: "",
     description: "",
     choice: [{ label: "", value: "" }], // Can contain one or more objects
@@ -108,7 +108,7 @@ const TicketRise = () => {
   
  
   
-  console.log("ticket",ticketData);
+  console.log("org",orgData);
   
 
   return (
@@ -263,16 +263,16 @@ const TicketRise = () => {
               <p className="text-[#6D6D6D] mt-2">
                 Only support .jpg, png, and zip files
               </p> */}
-           {orgData?.ticket_fields?.uploading?.length > 0&&<>
+           {orgData?.upload&&<>
             <label className="block text-[#495160]">Upload Attachment</label>
-             {orgData?.ticket_fields?.uploading?.length > 0&&orgData.ticket_fields.uploading.map((upload:any)=>(
+      
                 
                <div className="mt-3">
                 
-                <UploadInput label={upload.label} onFileSelect={handleFileUpload}/>
+                <UploadInput  onFileSelect={handleFileUpload}/>
                
                </div>
-             ))}
+            
               <p className="text-[#6D6D6D] mt-2">Only support .jpg,.png,.zip files</p>
            </>}
           

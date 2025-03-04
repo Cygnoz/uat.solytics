@@ -12,92 +12,84 @@ import { useEffect, useState } from 'react'
 import { endpoints } from '../../Services/apiEndpoints'
 import useApi from '../../Hooks/useApi'
 import { useOrg } from '../../context/OrgContext'
+import { useQuery } from '../../components/Navlist/Query'
 
 const MainPage = () => {
-    const navigate = useNavigate()
-    const {setOrgData}=useOrg()
-    const [orgFromProject, setOrgFromProject] = useState({
-        orgEmail: "",
-        orgImg: "",
-        projectName: "",
-      });
-      
-      useEffect(() => {
-        const receiveMessage = (event: MessageEvent) => {
-          console.log("Received message:", event);
-      
-          if (event.origin !== "http://localhost:5173") return; // Change for production
-      
-          if (event.data?.type === "ORG_DATA") {
-            try {
-              const parsedData = JSON.parse(event.data.data);
-              console.log("Parsed ORG_DATA:", parsedData);
-      
-              // Store data in localStorage
-              localStorage.setItem("orgData", JSON.stringify(parsedData));
-      
-              // ✅ Correctly update the state
-              setOrgFromProject({
-                orgEmail: parsedData.orgEmail || "",
-                orgImg: parsedData.orgImage || "",
-                projectName: parsedData.projectName || "",
-              });
-            } catch (error) {
-              console.error("Error parsing ORG_DATA:", error);
-            }
-          }
-        };
-      
-        window.addEventListener("message", receiveMessage);
-      
-        return () => {
-          window.removeEventListener("message", receiveMessage);
-        };
-      }, []); // ✅ No `orgFromProject` dependency here
-    
-      
-    
-     
-    const {request:getDatas}=useApi('get',5001)
+    const navigate = useNavigate();
+    const query = useQuery();
+    const { setOrgData,orgData } = useOrg();
+    const [localStorageData,setLocalStorageData]=useState<any>()
+    useEffect(() => {
    
-    
-    
-    
-  const getFrameWorkData = async () => {
-    try {
-      const { response, error } = await getDatas(`${endpoints.GET_FRAMEWORK}/${orgFromProject.projectName}`);
-      
-      if (response && !error) {
-        console.log("res", response.data.framework);
-        console.log("org",orgFromProject);
-        
-        // Create a local object with the new data
-        const updatedOrgData = {
-          orgEmail: orgFromProject.orgEmail,
-          orgImg: orgFromProject.orgImg,
-          project_name: orgFromProject.projectName,
-          ticket_fields: response.data.framework.ticket_fields,
-          boat_name: response.data.framework.boat_name,
-          boat_iframeurl: response.data.framework.boat_iframeurl,
-          "q&A": response.data.framework.qa, // Ensure key consistency
-          port_number: response.data.framework.port_number,
-          _id: response.data.framework._id,
-        };
-        // Use the updated data to setOrgData instead of the old state
-        setOrgData(updatedOrgData);
-        
-        console.log("Updated organization:", updatedOrgData);
+      const receiveMessage = (event: MessageEvent) => {
+        console.log("Received message:", event);  
+        if (event.data?.type === "ORG_DATA") {
+          try {
+            const parsedData = event.data.data;
+     
+            if (!parsedData) {
+              console.error("Parsed data is empty");
+              return;
+            }
+     
+            console.log("Parsed ORG_DATA:", parsedData);
+     
+            const updatedOrgData = {
+              email: parsedData.email || "",
+              image: parsedData.image || "",
+              name: parsedData.name || "",
+            };
+     
+            setLocalStorageData(updatedOrgData);
+            // localStorage.setItem("ORG_DATA", JSON.stringify(updatedOrgData));
+          } catch (error) {
+            console.error("Error handling ORG_DATA:", error);
+          }
+        }
+      };
+     
+     
+   
+      window.addEventListener("message", receiveMessage);
+   
+      return () => {
+        window.removeEventListener("message", receiveMessage);
+      };
+    }, []);
+   
+
+
+    useEffect(() => {
+      const projectName = query.get("projectName") || "";
+      if (projectName) {
+        fetchFrameworkData(projectName);
       }
-    } catch (err) {
-      console.log("err", err);
-    }
-  };
-  
-  useEffect(()=>{
-    if(orgFromProject.projectName){
-        getFrameWorkData()
-    }
-  },[orgFromProject.projectName])
+    }, [query]);
+   
+    const { request: getDatas } = useApi("get", 5001);
+   
+    const fetchFrameworkData = async (projectName: string) => {
+      try {
+        const { response, error } = await getDatas(
+          `${endpoints.GET_FRAMEWORK}/${projectName}`
+        );
+   
+        if (response && !error) {
+          console.log("res", response.data.framework);
+   
+          const frameworkData = response?.data?.framework || {};
+          setOrgData({
+            ...frameworkData,
+            email:localStorageData?.email ||"",
+            image:localStorageData?.image || "",
+            name:localStorageData?.name || ""
+          })
+        }
+      } catch (err) {
+        console.log("err", err);
+      }
+    };
+   
 
     return (
  
@@ -137,7 +129,7 @@ const MainPage = () => {
 
                 <div className='flex-row'>
                     {/* Tickets */}
-                    <div className="relative p-4 bg-[#DCEAFF] flex mb-4 rounded-lg justify-between items-center overflow-hidden">
+                   {orgData?.agent&& <div className="relative p-4 bg-[#DCEAFF] flex mb-4 rounded-lg justify-between items-center overflow-hidden">
                         {/* Top-right gradient */}
                         <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-tr from-[#DCEAFF] to-[#99BEF3] opacity-80 blur-sm"></div>
                         {/* Bottom-left gradient */}
@@ -165,11 +157,11 @@ const MainPage = () => {
                         <div className='cursor-pointer z-50' onClick={() => navigate('/message')}>
                             <RighArrow size={20} color="#000000" />
                         </div>
-                    </div>
+                    </div>}
 
                     {/* Send Us Message */}
 
-                    <div className="bg-blue-50 h-28 rounded-lg p-4 flex items-center justify-between col-span-2 " style={{ backgroundImage: `url(${SendUsBg})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
+                    <div className={`bg-blue-50 ${orgData?.agent?'h-28':'h-full'}  rounded-lg p-4 flex items-center justify-between col-span-2`} style={{ backgroundImage: `url(${SendUsBg})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
                         <div className="flex items-center" >
 
                             <img className='w-10 h-10' src={sendUs} alt="" />
