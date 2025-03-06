@@ -30,6 +30,11 @@ const Messages = () => {
     })
     setIsModal((prev) => !prev);
   };
+  useEffect(()=>{
+    if(!isModal){
+      getClientHistory()
+    }
+  },[isModal])
 
   const [searchValue, setSearchValue] = useState<any>("");
 

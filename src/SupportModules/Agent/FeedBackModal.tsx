@@ -7,6 +7,7 @@ import useApi from "../../Hooks/useApi";
 import { endpoints } from "../../Services/apiEndpoints";
 import { useResponse } from "../../context/ResponseContext";
 import { useNavigate } from "react-router-dom";
+import { socket } from "../../context/SocketContext";
 
 type Props = {
   onClose: () => void;
@@ -39,14 +40,18 @@ function FeedBackModal({ onClose }: Props) {
       customerId:feebBackDetails.customerId,
       ticketId:feebBackDetails?.ticketId,
       feedback,
-      star:rating
+      starCount:rating
     }
+
+    console.log("Body",body);
+    
     
     try{
       const {response,error}=await addFeedback(endpoints.ADD_FEEDBACK,body)
       if(response && !error){
         toast.success(response.data.message)
         onClose()
+        socket.emit("AddUnAssignedTickets")
       }else{
         toast.error(error.response.data.message)
       }
@@ -55,6 +60,9 @@ function FeedBackModal({ onClose }: Props) {
       
     }
   }
+
+  console.log("fe",feebBackDetails);
+  
 
   return (
   <>
