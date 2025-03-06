@@ -58,6 +58,7 @@
 # CMD ["/opt/venv/bin/gunicorn", "--workers", "4", "--bind", "0.0.0.0:5001", "--timeout", "120", "--access-logfile", "-", "--error-logfile", "-", "--log-level", "info", "app:app"]
 
 # Use Python 3.11 slim as base
+# Use Python 3.11 slim as base
 FROM python:3.11-slim
 
 # Set working directory
@@ -70,7 +71,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     FLASK_ENV=production \
     FLASK_APP=app.py
 
-# Install only necessary system dependencies
+# Install necessary system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     gcc \
@@ -81,6 +82,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN python -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
+# Copy application code BEFORE switching to non-root user
+COPY . .
+
 # Create requirements.txt with exact versions
 RUN echo "flask==2.3.3\n\
 flask-cors==4.0.0\n\
@@ -89,6 +93,7 @@ werkzeug==3.0.1\n\
 python-dotenv==1.0.0\n\
 marshmallow==3.20.1\n\
 requests==2.31.0\n\
+gevent==24.11.1\n\
 gunicorn==21.2.0" > requirements.txt
 
 # Install Python dependencies
@@ -98,31 +103,12 @@ RUN pip install --no-cache-dir --upgrade pip && \
 # Create non-root user
 RUN groupadd -r appuser && useradd -r -g appuser -s /sbin/nologin appuser
 
-# Create start script
-RUN echo '#!/bin/sh\n\
-exec gunicorn \
-    --workers=4 \
-    --threads=2 \
-    --bind=0.0.0.0:5001 \
-    --timeout=120 \
-    --access-logfile=- \
-    --error-logfile=- \
-    --log-level=info \
-    --worker-class=gthread \
-    --max-requests=10000 \
-    --max-requests-jitter=1000 \
-    "app:app"' > /app/start.sh && \
-    chmod +x /app/start.sh
-
-# Set permissions
+# Set permissions for non-root user
 RUN chown -R appuser:appuser /opt/venv && \
     chown -R appuser:appuser /app
 
 # Switch to non-root user
 USER appuser
-
-# Copy application code
-COPY --chown=appuser:appuser . .
 
 # Create necessary directories with correct permissions
 RUN mkdir -p /app/logs && \
@@ -135,8 +121,10 @@ EXPOSE 5001
 HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:5001/health || exit 1
 
+# Set environment variables for Gunicorn
 ENV GUNICORN_WORKERS=4 \
     GUNICORN_TIMEOUT=120
 
-# Update the CMD
-CMD ["sh", "-c", "gunicorn --workers=${GUNICORN_WORKERS} --bind=0.0.0.0:5001 --timeout=${GUNICORN_TIMEOUT} --access-logfile=- --error-logfile=- --log-level=info app:app"]
+# Start the application with Gunicorn
+CMD gunicorn --workers=$GUNICORN_WORKERS --bind=0.0.0.0:5001 --timeout=$GUNICORN_TIMEOUT \
+    --access-logfile=- --error-logfile=- --log-level=info --worker-class=gevent app:app
