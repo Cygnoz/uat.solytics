@@ -154,7 +154,7 @@ const MainPage = () => {
                                 </div>
                             </div>
                         </div>
-                        <div className='cursor-pointer z-50' onClick={() => navigate('/message')}>
+                        <div className='cursor-pointer z-50' onClick={() => navigate('/agent-chat')}>
                             <RighArrow size={20} color="#000000" />
                         </div>
                     </div>}
