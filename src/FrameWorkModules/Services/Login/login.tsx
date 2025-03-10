@@ -69,7 +69,7 @@ function Login() {
             <div className="rounded-md shadow-sm space-y-4">
               <div>
                 <label htmlFor="email" className="text-dropdownText text-sm">Email</label>
-                <input id="email" type="text" value={email} onChange={(e) => setEmail(e.target.value)} required
+                <input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required
                   className="pl-3 text-sm w-full rounded-md mt-1.5 bg-white border border-inputBorder h-[39px] focus:outline-none focus:border-darkRed" placeholder="Enter Email" />
               </div>
               <div>

@@ -21,7 +21,7 @@ type Props = {}
 
 function Playground({ }: Props) {
     const [open, setOpen] = useState(false);
-    const [activeTheme, setActiveTheme] = useState("WhiteTheme"); // Active theme
+    const [activeTheme, setActiveTheme] = useState("WhiteTheme"); 
     const [selectedTheme, setSelectedTheme] = useState("WhiteTheme");
     const { chatbotData, updateChatbotData } = useChatbot();
 
@@ -70,9 +70,10 @@ function Playground({ }: Props) {
     const handleSave = async () => {
         try {
             const themeColors = chatbotData.theme || getThemeColors(selectedTheme);
+            // const iframeUrl = `http://localhost:5174/main?projectName=${chatbotData.name}`;
             updateChatbotData({
                 theme: themeColors, // Ensure theme is updated
-                boat_iframeurl: `http://snapstext.com/main/${chatbotData.name}/`
+                // boat_iframeurl: `http://localhost:5173/main/${chatbotData.name}/`
                 // botUrl: frameworkData.boat_iframeurl
             });
 
@@ -80,13 +81,11 @@ function Playground({ }: Props) {
                 project_name: chatbotData.name,
                 // boat_name: chatbotData.name,
                 description: chatbotData.description,
-                domain: chatbotData.domain || '',
-                boat_iframeurl: chatbotData.boat_iframeurl,
+                boat_iframeurl: `https://solytics.online/main?projectName=${chatbotData.name}`,
                 theme: {
                     backgroundColor: chatbotData.theme?.backgroundColor,
                     textColor: chatbotData.theme?.textColor
                 },
-
                 ticket_fields: {
                     input: chatbotData.ticketFields?.filter(field => field.type === 'text').map(field => ({
                         label: field.title,
@@ -100,26 +99,83 @@ function Playground({ }: Props) {
                 agent: chatbotData.selectedFeatures?.includes('agent') || false,
                 qa: chatbotData.selectedFeatures?.includes('qa') || false,
                 insight: chatbotData.selectedFeatures?.includes('insight') || false,
+                forecast: chatbotData.selectedFeatures?.includes('forecast') || false,
                 upload: chatbotData.upload || false,
                 ticketSubject: chatbotData.ticketSubject || '',
-                ticketDescription: chatbotData.ticketDescription || ''
+                ticketDescription: chatbotData.ticketDescription || '',
+                website: chatbotData.website || '',
+                text: chatbotData.text || ''
+
             };
 
-            console.log('Chatbot data=:', chatbotData);          
+            updateChatbotData({
+                ...chatbotData,
+                boat_iframeurl: frameworkData.boat_iframeurl
+            })
+
+            let training_data = '';
+            let training_option = '';
+
+            if (chatbotData.website) {
+                training_option = 'website';
+                training_data = chatbotData.website;
+            }
+            else if (chatbotData.text) {
+                training_option = 'text';
+                training_data = chatbotData.text;
+            }
+
+
+            const botData = {
+                bot_name: chatbotData.name,
+                training_option: training_option,
+                training_data: training_data
+            };
+
+            console.log('Chatbot data=:', chatbotData);
             console.log('Framework data=:', frameworkData);
+            let successMessages = [];
 
-            const response = await axiosInstance.authInstance(5001).post(
-                endpoints.CREATE_FRAMEWORK,
-                frameworkData
-            );
-            console.log('Response from backend:', response.data);
-            console.log('framework = ', frameworkData);
+            try {
+                const agentResponse = await axiosInstance.authInstance(5001).post(
+                    endpoints.CREATE_FRAMEWORK,
+                    frameworkData
+                );
+                console.log('Framework Response:', agentResponse.data);
+                if (agentResponse.data) {
+                    successMessages.push('Framework created successfully');
+                }
+            } catch (error) {
+                console.error('Error creating framework:', error);
+                toast.error('Failed to create framework');
+                return;
+            }
+            if (frameworkData.qa || frameworkData.insight || frameworkData.forecast) {
+                try {
+                    const aiResponse = await axiosInstance.authInstance(5001).post(
+                        endpoints.CREATE_AIBOT,
+                        botData
+                    );
+                    console.log('AI Bot Response:', aiResponse.data);
+                    if (aiResponse.data) {
+                        successMessages.push('AI features created successfully');
+                    }
+                } catch (error) {
+                    console.error('Error creating AI features:', error);
+                    toast.error('Failed to create AI features');
+                    return;
+                }
+            }
 
-            if (response.data) {
-                toast.success('Framework saved successfully!', { duration: 2000 });
+            if (successMessages.length > 0) {
+                toast.success(successMessages.join(' and '), { duration: 2000 });
                 setTimeout(() => {
-                    navigate('/playground2', { state: { iframeUrl: frameworkData.boat_iframeurl } });
-                },1500);
+                    navigate('/playground2', {
+                        state: { iframeUrl: frameworkData.boat_iframeurl }
+                    });
+                }, 1500);
+            } else {
+                toast.error('No features selected to create');
             }
         } catch (error) {
             toast.error('Failed to save framework');
@@ -129,7 +185,7 @@ function Playground({ }: Props) {
 
     return (
         <div className="bg-[#F2F4F7] pb-5">
-            <Toaster position='top-center'/>
+            <Toaster position='top-center' />
             <div className="px-10 py-3 flex gap-2">
                 <Link to={"/addchatbot"}>
                     <img src={back} className='w-7 h-7  mt-0.5' alt="" />

@@ -12,10 +12,16 @@ import { useChatbot } from "../../../context/ChatbotContext";
 function PlaygroundConnect() {
     const [secondActiveTab, setSecondActiveTab] = useState("embedded");
     const { chatbotData } = useChatbot();
+    // const web = chatbotData.website;
+    // const txt = chatbotData.text;
+    // console.log('website=',web ,'text = ',txt );
+    
     // const location = useLocation();
     // const botUrl = location.state?.botData;
     
     {console.log("data = ",chatbotData)}
+    console.log("BOTURL = ",chatbotData.boat_iframeurl);
+    
 
     const getTabClass = (tab: string) =>
         `flex gap-2 items-start rounded-3xl p-5 cursor-pointer ${secondActiveTab === tab ? "bg-[#6229AB] text-[#F2F2F2]" : "bg-white"
