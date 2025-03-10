@@ -10,7 +10,6 @@ interface ChatbotData {
   name?: string;
   image?: string;
   description?: string;
-  domain?: string;
   boat_iframeurl?: string;
   selectedFeatures?: string[];
   botUrl?: string;
@@ -21,10 +20,14 @@ interface ChatbotData {
   agent?: boolean;
   qa?: boolean;
   insight?: boolean;
+  forecast?: boolean;
   ticketSubject?: string;
   ticketDescription?: string;
   ticketFields?: Field[];
   upload?: boolean;
+  website?: string;
+  file?: string;
+  text?: string;
 
 }
 

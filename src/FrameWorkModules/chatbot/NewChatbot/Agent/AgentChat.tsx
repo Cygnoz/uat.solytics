@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import FormPopup from './FormModal';
-import AddMore from '../../../../assets/FrameIcons/addMore.png';
+// import AddMore from '../../../../assets/FrameIcons/addMore.png';
 import Text from '../../../../assets/FrameIcons/Text.png';
 import Upload from '../../../../assets/FrameIcons/Upload.png';
 import Upload2 from '../../../../assets/FrameIcons/Upload2.png';
@@ -74,7 +74,8 @@ const AgentChat: React.FC = () => {
             updateChatbotData({ ticketFields: updatedFields });
             setSelectedField(null);
             setCurrentField({ title: '', content: '' });
-            setOptions(["Option 1", "Option 2"]);
+            setOptions(["", ""]);
+            setSelectedField(null);
         }
     };
 
@@ -214,7 +215,7 @@ const AgentChat: React.FC = () => {
                                 value={subject}
                                 onChange={handleSubjectChange}
                                 className={`w-full px-4 py-2 mt-2 border rounded-3xl`}
-                                required
+                                disabled
                             />
                             {formErrors.subject && (
                                 <p className="text-red-500 text-sm mt-1">Subject is required</p>
@@ -228,14 +229,14 @@ const AgentChat: React.FC = () => {
                                 value={description}
                                 onChange={handleDescriptionChange}
                                 className={`w-full px-4 py-2 mt-2 border rounded-3xl `}
-                                required
+                                disabled
                             />
                             {formErrors.description && (
                                 <p className="text-red-500 text-sm mt-1">Description is required</p>
                             )}
                         </div>
 
-                        <div className="flex items-center gap-3">
+                        {/* <div className="flex items-center gap-3">
                             <button
                                 className="flex items-center gap-2 text-[#1A243B] font-medium"
                                 onClick={(e) => {
@@ -246,7 +247,7 @@ const AgentChat: React.FC = () => {
                                 <img className='w-6 h-6' src={AddMore} alt="" />
                                 Add More
                             </button>
-                        </div>
+                        </div> */}
                         {/* Display added fields */}
                         {fields.length > 0 && (
                             <div className="mt-4 space-y-4">

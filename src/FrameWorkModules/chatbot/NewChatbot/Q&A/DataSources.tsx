@@ -4,10 +4,29 @@ import textIcon from "../../../../assets/FrameIcons/TextIcon.png"
 // import deleteIcon from "../../../../assets/FrameIcons/deleteIcon.png"
 import upload from "../../../../assets/FrameIcons/uploadIcon.png"
 import { Link } from "react-router-dom"
+import { useChatbot } from "../../../../context/ChatbotContext"
+import { useState } from "react"
+
 
 type Props = { page: string }
 
 function DataSources({ page }: Props) {
+    const [websiteUrl, setWebsiteUrl] = useState("")
+    const [text, setText] = useState("")
+    const { updateChatbotData } = useChatbot()
+
+    const handleSaveWebsite = () => {
+        updateChatbotData({ 
+            website: websiteUrl,
+            text: undefined
+         })
+    }
+    const handleSaveText =() => {
+        updateChatbotData({
+            website: undefined, 
+            text: text
+         })
+    }
     return (
         <div className="py-5 px-5 sm:px-10 lg:px-20 xl:px-48">
             {page === "Website" ? (
@@ -31,10 +50,14 @@ function DataSources({ page }: Props) {
                                 className="py-2 bg-[#F2F4F7] px-2 rounded-md w-full focus:outline-none"
                                 placeholder="https://www.example.com"
                                 type="text"
+                                value={websiteUrl}
+                                onChange={(e) => setWebsiteUrl(e.target.value)}
                             />
-                            <button className="bg-[#9747FF] text-white w-full sm:w-32 text-[14px] rounded-md sm:rounded-r-md">
+                            {/* <button
+                                className="bg-[#9747FF] text-white w-full sm:w-32 text-[14px] rounded-md sm:rounded-r-md"
+                                onClick={() =>setWebsiteUrl(websiteUrl)}>
                                 Fetch link
-                            </button>
+                            </button> */}
                         </div>
                         <div className="flex gap-3 py-3">
                             {/* <input
@@ -54,7 +77,9 @@ function DataSources({ page }: Props) {
                             </button>
                         </Link>
                         <Link to={"/playground"}>
-                            <button className="bg-[#9747FF] px-5 py-2 rounded-lg text-white">
+                            <button 
+                            className="bg-[#9747FF] px-5 py-2 rounded-lg text-white"
+                            onClick={handleSaveWebsite}>
                                 Save & Next
                             </button>
                         </Link>
@@ -135,17 +160,21 @@ function DataSources({ page }: Props) {
                             <textarea
                                 className="w-full border border-gray-300 rounded-md p-5 focus:outline-none"
                                 placeholder="Enter text here"
+                                value={text}
+                                onChange={(e) => setText(e.target.value)}
                             ></textarea>
                         </div>
                     </div>
                     <div className="flex justify-end gap-3 sm:gap-5 mt-5">
                         <Link to={"/dashboard"}>
-                            <button className="bg-[#FFFFFF] px-5 py-2 rounded-lg text-[#9747FF]">
+                            <button 
+                            className="bg-[#FFFFFF] px-5 py-2 rounded-lg text-[#9747FF]">
                                 Cancel
                             </button>
                         </Link>
                         <Link to={"/playground"}>
-                            <button className="bg-[#9747FF] px-5 py-2 rounded-lg text-white">
+                            <button className="bg-[#9747FF] px-5 py-2 rounded-lg text-white"
+                            onClick={handleSaveText}>
                                 Save & Next
                             </button>
                         </Link>

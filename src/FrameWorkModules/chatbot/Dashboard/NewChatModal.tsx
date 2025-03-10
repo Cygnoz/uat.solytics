@@ -19,7 +19,8 @@ const FeatureSelectionModal: React.FC<ModalProps> = ({ isOpen, onClose, existing
   const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
   const [chatbotName, setChatbotName] = useState('');
   const [chatbotDescription, setChatbotDescription] = useState('');
-  const [chatbotDomain, setChatbotDomain] = useState('');
+  // const [chatbotDomain, setChatbotDomain] = useState('');
+  const [featureError, setFeatureError] = useState<string>('');
   const [, setBotIcon] = useState<File | null>(null);
   const [nameError, setNameError] = useState<string>('');
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -68,6 +69,7 @@ const FeatureSelectionModal: React.FC<ModalProps> = ({ isOpen, onClose, existing
   }, [previewUrl]);
 
   const handleSubmit = () => {
+    setFeatureError('');
     if (!chatbotName.trim()) {
       setNameError('Chatbot name is required');
       return;
@@ -78,14 +80,20 @@ const FeatureSelectionModal: React.FC<ModalProps> = ({ isOpen, onClose, existing
       return;
     }
 
+    if (selectedOptions.length === 0) {
+      setFeatureError('Select a feature to continue');
+      return;
+    }
+
     const chatbotDataToUpdate = {
       name: chatbotName,
       description: chatbotDescription,
-      domain: chatbotDomain,
+      // domain: chatbotDomain,
       selectedFeatures: selectedOptions,
       agent: selectedOptions.includes('agent'), 
       qa: selectedOptions.includes('qa'),
-      insight: selectedOptions.includes('insights')
+      insight: selectedOptions.includes('insights'),
+      forecast: selectedOptions.includes('forecast')
     };
     
     console.log("Updating chatbot data with:", chatbotDataToUpdate);
@@ -99,7 +107,7 @@ const FeatureSelectionModal: React.FC<ModalProps> = ({ isOpen, onClose, existing
       setSelectedOptions([]);
       setChatbotName('');
       setChatbotDescription('');
-      setChatbotDomain('')
+      // setChatbotDomain('')
       setBotIcon(null);
     }
   }, [isOpen]);
@@ -117,13 +125,15 @@ const FeatureSelectionModal: React.FC<ModalProps> = ({ isOpen, onClose, existing
       id: 'qa',
       title: 'Q&A',
       description: 'Interactive answers from data for user queries instantly.',
-      icon: QA
+      icon: QA,
+      locked: true,
     },
     {
       id: 'insights',
       title: 'Insights',
       description: 'Actionable data-driven insights for smarter decisions and strategies',
-      icon: insight
+      icon: insight,
+      locked: true,
     },
     {
       id: 'forecast',
@@ -218,7 +228,7 @@ const FeatureSelectionModal: React.FC<ModalProps> = ({ isOpen, onClose, existing
                     className="mt-1 h-8 w-full px-3 border border-gray-300 rounded-full shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm"
                   />
                 </div>
-                <div>
+                {/* <div>
                   <label htmlFor="chatbotDescription" className="block text-xs font-medium text-gray-600">
                     Domain
                   </label>
@@ -230,7 +240,7 @@ const FeatureSelectionModal: React.FC<ModalProps> = ({ isOpen, onClose, existing
                     placeholder="Enter Domain"
                     className="mt-1 h-8 w-full px-3 border border-gray-300 rounded-full shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm"
                   />
-                </div>
+                </div> */}
               </div>
             </div>
           </form>

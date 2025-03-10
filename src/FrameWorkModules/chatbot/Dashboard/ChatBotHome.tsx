@@ -12,10 +12,21 @@ interface ChatbotCardProps {
   boat_iframeurl: string;
   port_number: number;
   project_name: string;
-  tags?: string[]; 
+  agent: boolean;
+  qa: boolean;
+  insight: boolean;
+  forecast: boolean;
 }
 
-const ChatbotCard: React.FC<ChatbotCardProps> = ({ boat_name,description, boat_iframeurl, tags = [] }) => {
+const ChatbotCard: React.FC<ChatbotCardProps> = ({ boat_name,description, boat_iframeurl, agent,qa,insight,forecast }) => {
+  const getTags =() => {
+    const activeTags =[];
+    if (agent) activeTags.push('agent chat');
+    if (qa) activeTags.push('q&a');
+    if (insight) activeTags.push('insight');
+    if (forecast) activeTags.push('forecast');
+    return activeTags;
+  }
   return (
     <div className="bg-white p-6 w-93 gap-8 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
       <div className="flex items-start gap-4">
@@ -28,7 +39,7 @@ const ChatbotCard: React.FC<ChatbotCardProps> = ({ boat_name,description, boat_i
       </div>
       <hr className="border-t border-gray-200 my-5 -mx-6" />
       <div className="flex flex-wrap gap-2">
-        {tags.map((tag, index) => (
+        {getTags().map((tag, index) => (
           <span
             key={index}
             className={`px-3 py-1 rounded-full text-xs font-medium
@@ -71,8 +82,10 @@ const ChatbotDashboard = () => {
           boat_iframeurl: framework.boat_iframeurl,
           port_number: framework.port_number,
           project_name: framework.project_name,
-          qa: framework.qa,
-          tags: ['agent chat'], 
+          agent: framework.agent || false,
+          qa: framework.qa || false,
+          insight: framework.insight || false,
+          forecast: framework.forecast || false
         }));
 
         const names = response.data.frameworks.map((framework:any) => framework.boat_name)
@@ -129,7 +142,10 @@ const ChatbotDashboard = () => {
                 boat_iframeurl={chatbot.boat_iframeurl}
                 port_number={chatbot.port_number}
                 project_name={chatbot.project_name}
-                tags={chatbot.tags}
+                agent={chatbot.agent}
+                qa={chatbot.qa}
+                insight={chatbot.insight}
+                forecast={chatbot.forecast}
               />
             ))}
           </div>
