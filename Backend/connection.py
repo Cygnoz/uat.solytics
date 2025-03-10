@@ -9,7 +9,7 @@ def get_database():
         client = MongoClient(mongo_uri)
 
         # Replace 'your_database_name' with the name of your database
-        database_name = "DB"
+        database_name = "chatbot_db"
         db = client[database_name]
         chatbots_collection = db['chatbots']
         
