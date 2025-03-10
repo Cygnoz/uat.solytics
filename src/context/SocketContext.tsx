@@ -10,7 +10,6 @@ if (!AGENT_SOCKET_URL) {
 
 // Create the socket instance
 export const socket: Socket = io(AGENT_SOCKET_URL, {
-  path: "/nexsell-tickets/socket.io/",
   transports: ["websocket", "polling"],
   withCredentials: true,
 });
