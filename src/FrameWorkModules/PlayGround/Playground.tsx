@@ -72,7 +72,7 @@ function Playground({ }: Props) {
             const themeColors = chatbotData.theme || getThemeColors(selectedTheme);
             updateChatbotData({
                 theme: themeColors, // Ensure theme is updated
-                boat_iframeurl: `http://localhost:5173/main/${chatbotData.name}/`
+                boat_iframeurl: `http://snapstext.com/main/${chatbotData.name}/`
                 // botUrl: frameworkData.boat_iframeurl
             });
 
