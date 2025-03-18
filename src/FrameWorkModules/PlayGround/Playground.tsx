@@ -1,9 +1,9 @@
-import profile from '../../assets/FrameIcons/billieProfile.png'
-import refresh from '../../assets/FrameIcons/refeshIcon.png'
-import dot from '../../assets/FrameIcons/3dotIcon.png'
-import uplaod from '../../assets/FrameIcons/VectorIcon.png'
-import send from '../../assets/FrameIcons/SendIcon.png'
-import theme from '../../assets/FrameIcons/colorThemeIcon.png'
+// import profile from '../../assets/FrameIcons/billieProfile.png'
+// import refresh from '../../assets/FrameIcons/refeshIcon.png'
+// import dot from '../../assets/FrameIcons/3dotIcon.png'
+// import uplaod from '../../assets/FrameIcons/VectorIcon.png'
+// import send from '../../assets/FrameIcons/SendIcon.png'
+// import theme from '../../assets/FrameIcons/colorThemeIcon.png'
 import WhiteMode from '../../assets/FrameImages/WhiteTheme.png'
 import DarkMode from '../../assets/FrameImages/darkTheme.png'
 import SoftBlue from '../../assets/FrameImages/SoftBlue.png'
@@ -41,6 +41,7 @@ function Playground({ }: Props) {
 
     // const location = useLocation();
     const navigate = useNavigate();
+    console.log(activeTheme);
     // const botData = location.state?.botData;
 
     // console.log('Bot Data:-', botData);
@@ -64,9 +65,9 @@ function Playground({ }: Props) {
     };
 
 
-    const themeStyles = chatbotData && chatbotData.theme
-        ? chatbotData.theme
-        : getThemeColors(activeTheme);
+    // const themeStyles = chatbotData && chatbotData.theme
+    //     ? chatbotData.theme
+    //     : getThemeColors(activeTheme);
 
     const handleSave = async () => {
         try {
