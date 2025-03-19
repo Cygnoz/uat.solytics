@@ -8,8 +8,10 @@ def get_database():
         mongo_uri = os.getenv("MONGO_URI")
         client = MongoClient(mongo_uri)
 
-        # Replace 'your_database_name' with the name of your database
-        database_name = "chatbot_db"
+        # dev db
+        # database_name = "chatbot_db"
+        # Sit Db
+        database_name="SolysticSIT"
         db = client[database_name]
         chatbots_collection = db['chatbots']
         

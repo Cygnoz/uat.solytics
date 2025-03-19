@@ -63,7 +63,7 @@ chatbots_collection = db["chatbots"]
 
 @app.route("/", methods=["GET"])
 def status():
-    return jsonify({"message": "Chatbot is working 🤖"}), 200
+    return jsonify({"message": "Chatbot SIT is working 🤖"}), 200
 
 # def process_scraped_data(text):
 #     """Process text data and create FAISS index"""
