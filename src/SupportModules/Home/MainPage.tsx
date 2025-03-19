@@ -39,7 +39,8 @@ const MainPage = () => {
               image: parsedData.image || "",
               name: parsedData.name || "",
             };
-     
+            console.log("updat",updatedOrgData);
+            
             setLocalStorageData(updatedOrgData);
             // localStorage.setItem("ORG_DATA", JSON.stringify(updatedOrgData));
           } catch (error) {
@@ -64,7 +65,7 @@ const MainPage = () => {
       if (projectName) {
         fetchFrameworkData(projectName);
       }
-    }, [query]);
+    }, [localStorageData]);
    
     const { request: getDatas } = useApi("get", 5001);
    
@@ -90,6 +91,8 @@ const MainPage = () => {
       }
     };
    
+      console.log("losss",localStorageData);
+      
 
     return (
  

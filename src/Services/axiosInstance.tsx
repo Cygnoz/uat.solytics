@@ -2,6 +2,7 @@ import axios from "axios";
 
 const BASE_URLS: Record<number, string> = {
   3004: import.meta.env.VITE_REACT_APP_TICKETS,
+  3001:import.meta.env.VITE_REACT_APP_LEADS,
   5001: import.meta.env.VITE_REACT_APP_FRAMEWORK
 };
 

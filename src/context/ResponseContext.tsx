@@ -16,6 +16,8 @@ type ResponseContextType = {
   setFeedBackDetails: React.Dispatch<React.SetStateAction<FeedBackData>>;
   ticketStatus:string
   setTicketStatus:React.Dispatch<React.SetStateAction<string>>;
+  postLoading: any;
+  setPostLoading: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 // Create the context with a default value
@@ -39,9 +41,9 @@ export const ResponseProvider = ({ children }: { children: ReactNode }) => {
 
   const [loading, setLoading] = useState<boolean>(false);
   const [ticketStatus,setTicketStatus]=useState('')
-
+  const [postLoading, setPostLoading] = useState<boolean>(false);
   return (
-    <ResponseContext.Provider value={{ loading, setLoading, feebBackDetails,setFeedBackDetails,setTicketStatus,ticketStatus }}>
+    <ResponseContext.Provider value={{ loading, setLoading, feebBackDetails,setFeedBackDetails,setTicketStatus,ticketStatus,postLoading,setPostLoading }}>
       {children}
     </ResponseContext.Provider>
   );
