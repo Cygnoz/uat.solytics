@@ -42,6 +42,7 @@ export const ResponseProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [ticketStatus,setTicketStatus]=useState('')
   const [postLoading, setPostLoading] = useState<boolean>(false);
+
   return (
     <ResponseContext.Provider value={{ loading, setLoading, feebBackDetails,setFeedBackDetails,setTicketStatus,ticketStatus,postLoading,setPostLoading }}>
       {children}

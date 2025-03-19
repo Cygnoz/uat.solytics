@@ -10,4 +10,8 @@ export const endpoints={
     // Chat History
    CHAT_HISTORY:'/history',
     CHATS_LEAD:'/chats/lead',
+
+    // Help
+     CATEGORY: 'categories',
+     ARTICLE:'article',
 }

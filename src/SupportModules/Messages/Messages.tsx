@@ -164,6 +164,7 @@ const Messages = () => {
           .map((history: any) => history.ticketDetails); // 🔑 Extract only ticketDetails
     
         console.log("Filtered Ticket Details:", ticketDetailsArray);
+        
         setAllTickets(ticketDetailsArray);
       } else {
         console.log("No chat history found.");
@@ -173,6 +174,7 @@ const Messages = () => {
      
   }, [orgData]);
   console.log("org",orgData);
+
   return (
     <>
       <div className=" px-3 pb-4 relative">

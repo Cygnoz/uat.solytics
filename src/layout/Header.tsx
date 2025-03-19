@@ -12,7 +12,7 @@ function Header({ }: Props) {
                         src={logo}
                         alt=""
                     />
-                    <span className="text-[20px] font-[500] ps-2 text-[#000000]">Cygnozbot</span>
+                    <span className="text-[20px] font-[500] ps-2 text-[#000000]">Solytics</span>
                 </a>
                 <img src={profile} className="" alt="" />
             </nav>

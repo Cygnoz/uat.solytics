@@ -30,7 +30,6 @@ const Footer = ({}: Props) => {
 
    useEffect(() => {
     if (orgData?.email) {
-         socket.emit("joinNotificationRoom", orgData?.email);
          socket.on("unreadCountUpdate",(count)=>{
            console.log("count",count);
            setNotification(count)

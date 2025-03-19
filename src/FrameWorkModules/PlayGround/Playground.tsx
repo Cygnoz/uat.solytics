@@ -1,12 +1,13 @@
-import profile from '../../assets/FrameIcons/billieProfile.png'
-import refresh from '../../assets/FrameIcons/refeshIcon.png'
-import dot from '../../assets/FrameIcons/3dotIcon.png'
-import uplaod from '../../assets/FrameIcons/VectorIcon.png'
-import send from '../../assets/FrameIcons/SendIcon.png'
-import theme from '../../assets/FrameIcons/colorThemeIcon.png'
+// import profile from '../../assets/FrameIcons/billieProfile.png'
+// import refresh from '../../assets/FrameIcons/refeshIcon.png'
+// import dot from '../../assets/FrameIcons/3dotIcon.png'
+// import uplaod from '../../assets/FrameIcons/VectorIcon.png'
+// import send from '../../assets/FrameIcons/SendIcon.png'
+// import theme from '../../assets/FrameIcons/colorThemeIcon.png'
 import WhiteMode from '../../assets/FrameImages/WhiteTheme.png'
 import DarkMode from '../../assets/FrameImages/darkTheme.png'
 import SoftBlue from '../../assets/FrameImages/SoftBlue.png'
+import Billie from '../../assets/FrameImages/billie.png'
 import back from '../../assets/FrameIcons/backIcon.png'
 
 import { Box, Modal } from '@mui/material'
@@ -40,6 +41,7 @@ function Playground({ }: Props) {
 
     // const location = useLocation();
     const navigate = useNavigate();
+    console.log(activeTheme);
     // const botData = location.state?.botData;
 
     // console.log('Bot Data:-', botData);
@@ -63,9 +65,9 @@ function Playground({ }: Props) {
     };
 
 
-    const themeStyles = chatbotData && chatbotData.theme
-        ? chatbotData.theme
-        : getThemeColors(activeTheme);
+    // const themeStyles = chatbotData && chatbotData.theme
+    //     ? chatbotData.theme
+    //     : getThemeColors(activeTheme);
 
     const handleSave = async () => {
         try {
@@ -202,7 +204,7 @@ function Playground({ }: Props) {
             <div className="flex justify-center items-center">
                 <div className="bg-[#FFFFFF] rounded-xl  sm:w-[780px]  py-5 w-[500px] flex justify-center">
                     <div>
-                        <div className="w-[300px] sm:w-[400px] shadow-lg border border-[#F2F4F7] rounded-xl">
+                        {/* <div className="w-[300px] sm:w-[400px] shadow-lg border border-[#F2F4F7] rounded-xl">
                             <div className="bg-[#9747FF] rounded-t-xl flex justify-between w-full px-5 py-3">
                                 <div className='flex gap-2'>
                                     <div className="bg-[white] w-10 h-10 rounded-full p-1">
@@ -284,12 +286,16 @@ function Playground({ }: Props) {
                                     </button>
                                 </div>
                             </div>
+                        </div> */}
+
+                        <div className="flex justify-center">
+                            <img src={Billie} className='w-[50%]' alt="" />
                         </div>
-                        <div className='flex -me-16  justify-end '>
+                        {/* <div className='flex -me-16  justify-end '>
                             <button onClick={() => setOpen(true)}>
                                 <img src={theme} alt="" />
                             </button>
-                        </div>
+                        </div> */}
                     </div>
                 </div>
             </div>
