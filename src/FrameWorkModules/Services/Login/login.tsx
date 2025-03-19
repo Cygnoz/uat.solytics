@@ -60,8 +60,8 @@ function Login() {
   };
 
   return (
-    <div className="h-[100vh] flex flex-col-reverse sm:flex-row">
-      <div className="w-full sm:w-[50%] justify-center flex items-center bg-white p-4 sm:p-0">
+    <div className="h-[100vh] grid grid-cols-2 max-sm:grid-cols-1">
+      <div className="w-full  justify-center flex items-center bg-white p-4 sm:p-0">
         <div className="w-full sm:w-[60%]">
           <p className="text-[#101828] font-[700] text-[24px] sm:text-[36px]">Sign In to Solytics</p>
           <p className="text-[#667085] mt-2 text-[16px] sm:text-[18px] font-[400]">AI-Powered Chatbots, Simplified for Everyone</p>
@@ -103,8 +103,7 @@ function Login() {
           </form>
         </div>
       </div>
-      <div className="w-[50%] hidden sm:block py-5 ps-5">
-        <div style={{ backgroundImage: `url(${bgImg})`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundRepeat: 'no-repeat', width: '600px', height: '100%' }}>
+        <div className='w-full max-sm:hidden bg-[#6A24C5]' style={{ backgroundImage: `url(${bgImg})`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundRepeat: 'no-repeat', height: '100%' }}>
           <div>
             <h2 className="text-[20px] py-5 ps-5 text-[#FFFFFF] font-[900]">Solytics</h2>
             <div className='py-2 flex justify-center'>
@@ -119,7 +118,6 @@ function Login() {
             </div>
           </div>
         </div>
-      </div>
     </div>
   );
 }

@@ -29,7 +29,16 @@ const routeComponents: { [key: string]: JSX.Element } = {
 };
 
 const routesWithHeader = ['/dashboard', '/addchatbot', '/playground', '/playground2'];
-
+// const LoadingOverlay = () => {
+//   return (
+//     <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-80 z-[9999]">
+//       <div className="relative w-16 h-16">
+//         {/* Spinning Loader */}
+//         <div className="absolute inset-0 border-[7px]  border-[#C96E76] border-t-transparent rounded-full animate-spin"></div>
+//       </div>
+//     </div>
+//   );
+// };
 function App() {
   const location = useLocation();
   const currentPath = location.pathname;
@@ -118,6 +127,7 @@ function App() {
         
       </div>
     )}
+    
     <Toaster reverseOrder={false} />
   </>
     
