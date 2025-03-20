@@ -10,7 +10,9 @@ load_dotenv()
 # Configure MongoDB
 db = get_database()
 mongo_client = MongoClient(os.getenv("MONGO_URI"))
-db = mongo_client["chatbot_db"]
+database_name="SolysticSIT"
+# db = mongo_client["chatbot_db"]
+db=mongo_client[database_name]
 framework_collection = db["frameworks"]
 
 class InputFieldSchema(Schema):
@@ -144,7 +146,7 @@ def get_all_frameworks():
     try:
         frameworks = list(framework_collection.find())
         if not frameworks:
-            raise ValueError("No frameworks found")
+            return {"message": "No frameworks present"}
         for framework in frameworks:
             framework["_id"] = str(framework["_id"])
         return frameworks

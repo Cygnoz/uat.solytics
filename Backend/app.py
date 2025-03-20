@@ -46,7 +46,9 @@ logging.basicConfig(level=logging.INFO)
 
 # Configure MongoDB
 mongo_client = MongoClient(os.getenv("MONGO_URI"))
-db = mongo_client["chatbot_db"]
+# db = mongo_client["chatbot_db"]
+database_name="SolysticSIT"
+db=mongo_client[database_name]
 chatbots_collection = db["chatbots"]
 
 # # Configure OpenAI
