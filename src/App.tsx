@@ -1,4 +1,4 @@
-import { Route, Routes, useLocation } from 'react-router-dom';
+import { Navigate, Outlet, Route, Routes, useLocation } from 'react-router-dom';
 import './App.css';
 import Footer from './layout/Footer';
 import Header from './layout/Header';
@@ -18,6 +18,13 @@ import { Navlist } from './components/Navlist/Navlist';
 import { ChatbotProvider } from './context/ChatbotContext';
 
 
+// Protect these routes
+const protectedRoutes = ['/dashboard', '/addchatbot', '/playground', '/playground2'];
+
+function PrivateRoute() {
+  const isAuthenticated = localStorage.getItem('token'); 
+  return isAuthenticated ? <Outlet /> : <Navigate to="/" replace />;
+}
 
 const routeComponents: { [key: string]: JSX.Element } = {
   "/main": <MainPage />,
@@ -28,7 +35,7 @@ const routeComponents: { [key: string]: JSX.Element } = {
   "/ticket-view/:id": <TicketView />,
 };
 
-const routesWithHeader = ['/dashboard', '/addchatbot', '/playground', '/playground2'];
+// const routesWithHeader = ['/dashboard', '/addchatbot', '/playground', '/playground2'];
 // const LoadingOverlay = () => {
 //   return (
 //     <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-80 z-[9999]">
@@ -42,7 +49,7 @@ const routesWithHeader = ['/dashboard', '/addchatbot', '/playground', '/playgrou
 function App() {
   const location = useLocation();
   const currentPath = location.pathname;
-  const showHeader = routesWithHeader.includes(currentPath);
+  const showHeader = protectedRoutes.includes(currentPath);
 
   const isWrappedRoute = Navlist.some(({ basePath, subPath }) =>
     [basePath, ...subPath].some(path => 
@@ -50,87 +57,49 @@ function App() {
     )
   );
   return (
-    // <>
-    //   {!framework ? (
-    //     <div className="w-full h-[98vh]">
-    //       <div className="bg-white rounded-xl shadow-2xl flex flex-col h-full">
-    //         {/* Scrollable Content */}
-    //         <div className="flex-1 overflow-auto hide-scrollbar">
-    //           <Routes>
-    //             <Route path="/main" element={<MainPage />} />
-    //             <Route path="/help" element={<HelpPage />} />
-    //             <Route path="/send-messages" element={<SendMessage />} />
-    //             <Route path="/message" element={<Messages />} />
-    //             <Route path="/agent-chat" element={<TicketRise />} />
-    //             <Route path="/ticket-view/:id" element={<TicketView />} />
-    //           </Routes>
-    //         </div>
-
-    //         {/* Fixed Footer */}
-    //         {!currentPath.startsWith('/ticket-view') && (
-    //           <div className="mt-auto">
-    //             <Footer />
-    //           </div>
-    //         )}
-    //       </div>
-    //       <Toaster reverseOrder={false} />
-    //     </div>
-    //   ) : (
-    //     <div>
-    //       <Routes>
-    //         {/* Routes from framework */}
-    //         <Route path="/" element={<Login />} />
-    //         <Route path="/dashboard" element={<ChatbotDashboard />} />
-    //         <Route path="/addchatbot" element={<NewChatBot />} />
-    //         <Route path="/playground" element={<Playground />} />
-    //         <Route path="/playground2" element={<PlaygroundConnect />} />
-    //       </Routes>
-    //     </div>
-    //   )}
-    // </>
     <>
-    
-    {isWrappedRoute ? (
-      <div className="w-full h-[98vh]">
-        <div className="bg-white rounded-xl shadow-2xl flex flex-col h-full">
-          {/* Scrollable Content */}
-          <div className="flex-1 overflow-auto hide-scrollbar">
-            <Routes>
-              {Navlist.flatMap(({ subPath }) =>
-                subPath.map((path) => (
-                  <Route key={path} path={path} element={routeComponents[path]} />
-                ))
-              )}
-            </Routes>
-          </div>
-
-          {/* Fixed Footer */}
-          {!currentPath.startsWith('/ticket-view') && (
-            <div className="mt-auto">
-              <Footer />
+      {isWrappedRoute ? (
+        <div className="w-full h-[98vh]">
+          <div className="bg-white rounded-xl shadow-2xl flex flex-col h-full">
+            <div className="flex-1 overflow-auto hide-scrollbar">
+              <Routes>
+                {Navlist.flatMap(({ subPath }) =>
+                  subPath.map((path) => (
+                    <Route key={path} path={path} element={routeComponents[path]} />
+                  ))
+                )}
+              </Routes>
             </div>
-          )}
+
+            {!currentPath.startsWith('/ticket-view') && (
+              <div className="mt-auto">
+                <Footer />
+              </div>
+            )}
+          </div>
         </div>
-      </div>
-    ) : (
-      <div>
-        {showHeader && <Header />}
-        <ChatbotProvider>
-        <Routes>
-          <Route path="/" element={<Login />} />
-          <Route path="/dashboard" element={<ChatbotDashboard />} />
-          <Route path="/addchatbot" element={<NewChatBot />} />
-          <Route path="/playground" element={<Playground />} />
-          <Route path="/playground2" element={<PlaygroundConnect />} />
-        </Routes>
-        </ChatbotProvider>
-        
-      </div>
-    )}
-    
-    <Toaster reverseOrder={false} />
-  </>
-    
+      ) : (
+        <div>
+          {showHeader && <Header />}
+          <ChatbotProvider>
+            <Routes>
+              {/* Public Route */}
+              <Route path="/" element={<Login />} />
+
+              {/* Protected Routes */}
+              <Route element={<PrivateRoute />}>
+                <Route path="/dashboard" element={<ChatbotDashboard />} />
+                <Route path="/addchatbot" element={<NewChatBot />} />
+                <Route path="/playground" element={<Playground />} />
+                <Route path="/playground2" element={<PlaygroundConnect />} />
+              </Route>
+            </Routes>
+          </ChatbotProvider>
+        </div>
+      )}
+      
+      <Toaster reverseOrder={false} />
+    </>
   );
 }
 

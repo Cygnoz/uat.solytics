@@ -2,7 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import { io, Socket } from "socket.io-client";
 
 // Ensure environment variable is loaded
-const AGENT_SOCKET_URL = import.meta.env.VITE_REACT_APP_TICKETS;
+const AGENT_SOCKET_URL = import.meta.env.VITE_REACT_APP_TICKETS_SOCKET;
 
 if (!AGENT_SOCKET_URL) {
   console.error("AGENT_SOCKET_URL is not defined in the environment variables.");
