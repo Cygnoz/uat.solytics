@@ -7,6 +7,8 @@ export const endpoints={
     CREATE_FRAMEWORK: '/create_framework',
     CREATE_AIBOT: '/create_chatbot',
     LOGIN: '/login',
+    DELETE_FRAMEWORK:'/delete_framework',
+    UPDATE_FRAMEWORK:'/update_framework',
     // Chat History
    CHAT_HISTORY:'/history',
     CHATS_LEAD:'/chats/lead',
