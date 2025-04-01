@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 from pymongo import MongoClient
 from gevent.pywsgi import WSGIServer
 from werkzeug.security import generate_password_hash, check_password_hash
-from framework import create_custom_framework, get_custom_framework, get_all_frameworks
+from framework import create_custom_framework, get_custom_framework, get_all_frameworks,delete_framework
 from connection import get_database
  
 # import pickle
@@ -45,10 +45,7 @@ CORS(app, resources={
 logging.basicConfig(level=logging.INFO)
 
 # Configure MongoDB
-mongo_client = MongoClient(os.getenv("MONGO_URI"))
-# db = mongo_client["chatbot_db"]
-database_name="SolysticSIT"
-db=mongo_client[database_name]
+db = get_database()
 chatbots_collection = db["chatbots"]
 
 # # Configure OpenAI
@@ -471,6 +468,24 @@ def frameworks_endpoint():
         return jsonify({"frameworks": frameworks})
     except ValueError as e:
         return jsonify({"error": "Failed to retrieve frameworks", "message": str(e)}), 400
+
+
+@app.route("/delete_framework/<framework_id>", methods=["DELETE"])
+def delete_framework_endpoint(framework_id):
+    try:
+        result = delete_framework(framework_id)
+        if result["success"]:
+            return jsonify(result), 200
+        return jsonify(result), 404
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "error": f"Server error: {str(e)}"
+        }), 500
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 @app.route('/register', methods=['POST'])

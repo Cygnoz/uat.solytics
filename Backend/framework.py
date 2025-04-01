@@ -9,10 +9,6 @@ load_dotenv()
 
 # Configure MongoDB
 db = get_database()
-mongo_client = MongoClient(os.getenv("MONGO_URI"))
-database_name="SolysticSIT"
-# db = mongo_client["chatbot_db"]
-db=mongo_client[database_name]
 framework_collection = db["frameworks"]
 
 class InputFieldSchema(Schema):
@@ -152,3 +148,28 @@ def get_all_frameworks():
         return frameworks
     except Exception as e:
         raise ValueError(f"Error retrieving frameworks: {str(e)}")
+    
+def delete_framework(framework_id: str):
+    try:
+        # Convert string ID to ObjectId
+        object_id = ObjectId(framework_id)
+        
+        # First check if framework exists
+        framework = framework_collection.find_one({"_id": object_id})
+        if not framework:
+            raise ValueError("Framework not found")
+        
+        # Delete the framework
+        result = framework_collection.delete_one({"_id": object_id})
+        
+        # Return serializable response
+        return {
+            "success": True,
+            "message": f"Framework {framework_id} deleted successfully"
+        }
+    except Exception as e:
+        # Return serializable error
+        return {
+            "success": False,
+            "error": str(e)
+        }

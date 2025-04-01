@@ -3,24 +3,30 @@ import os
 from dotenv import load_dotenv
 
 load_dotenv()
+
+# Create a global database connection
+_db = None
+
 def get_database():
-    try:
-        mongo_uri = os.getenv("MONGO_URI")
-        client = MongoClient(mongo_uri)
+    global _db
+    if _db is None:
+        try:
+            mongo_uri = os.getenv("MONGO_URI")
+            client = MongoClient(mongo_uri)
 
-        # dev db
-        # database_name = "chatbot_db"
-        # Sit Db
-        database_name="SolysticSIT"
-        db = client[database_name]
-        chatbots_collection = db['chatbots']
-        
-        print("Successfully connected to the database.")
-        return db
-    except Exception as e:
-        print(f"An error occurred while connecting to the database: {e}")
-        return None
+            # dev db
+            # database_name = "chatbot_db"
 
-# Uncomment the following lines to test the connection
-if __name__ == "__main__":
-     db = get_database()
+            # sit db
+            # database_name = "SolysticSIT"
+
+            # UAT db
+            database_name = "chatbot_uat"
+
+
+            _db = client[database_name]
+            print("Successfully connected to the database.")
+        except Exception as e:
+            print(f"An error occurred while connecting to the database: {e}")
+            return None
+    return _db
