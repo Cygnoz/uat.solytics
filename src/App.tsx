@@ -16,15 +16,15 @@ import Playground from './FrameWorkModules/PlayGround/Playground';
 import PlaygroundConnect from './FrameWorkModules/PlayGround/Connect/PlaygroundConnect';
 import { Navlist } from './components/Navlist/Navlist';
 import { ChatbotProvider } from './context/ChatbotContext';
+import NoAccess from './context/NoAccess';
+import { useEffect } from 'react';
 
+ 
 
 // Protect these routes
 const protectedRoutes = ['/dashboard', '/addchatbot', '/playground', '/playground2'];
 
-function PrivateRoute() {
-  const isAuthenticated = localStorage.getItem('token'); 
-  return isAuthenticated ? <Outlet /> : <Navigate to="/" replace />;
-}
+
 
 const routeComponents: { [key: string]: JSX.Element } = {
   "/main": <MainPage />,
@@ -47,6 +47,14 @@ const routeComponents: { [key: string]: JSX.Element } = {
 //   );
 // };
 function App() {
+  const isAuthenticated = localStorage.getItem('token');
+  function PrivateRoute() {
+    return isAuthenticated ? <Outlet /> : <NoAccess/>;
+  }
+
+  useEffect(()=>{
+    PrivateRoute()
+  },[isAuthenticated])
   const location = useLocation();
   const currentPath = location.pathname;
   const showHeader = protectedRoutes.includes(currentPath);
@@ -80,7 +88,7 @@ function App() {
         </div>
       ) : (
         <div>
-          {showHeader && <Header />}
+          {(showHeader &&isAuthenticated) &&<Header />}
           <ChatbotProvider>
             <Routes>
               {/* Public Route */}
@@ -93,6 +101,7 @@ function App() {
                 <Route path="/playground" element={<Playground />} />
                 <Route path="/playground2" element={<PlaygroundConnect />} />
               </Route>
+              <Route path="*" element={<NoAccess />} />
             </Routes>
           </ChatbotProvider>
         </div>
