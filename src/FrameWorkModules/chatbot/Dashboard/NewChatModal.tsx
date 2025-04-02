@@ -35,7 +35,7 @@ const FeatureSelectionModal: React.FC<ModalProps> = ({ isOpen, onClose, existing
   };
 
   console.log(featureError);
-  
+
   const convertToBase64 = (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -44,7 +44,7 @@ const FeatureSelectionModal: React.FC<ModalProps> = ({ isOpen, onClose, existing
       reader.onerror = (error) => reject(error);
     });
   };
-  
+
   // Update handleIconUpload to use base64
   const handleIconUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -75,7 +75,7 @@ const FeatureSelectionModal: React.FC<ModalProps> = ({ isOpen, onClose, existing
       setNameError('Chatbot name is required');
       return;
     }
-    if (existingChatbotNames.some(existingName => 
+    if (existingChatbotNames.some(existingName =>
       existingName.toLowerCase() === chatbotName.toLowerCase())) {
       setNameError('This chatbot name already exists. Please choose a different name.');
       return;
@@ -91,12 +91,12 @@ const FeatureSelectionModal: React.FC<ModalProps> = ({ isOpen, onClose, existing
       description: chatbotDescription,
       // domain: chatbotDomain,
       selectedFeatures: selectedOptions,
-      agent: selectedOptions.includes('agent'), 
+      agent: selectedOptions.includes('agent'),
       qa: selectedOptions.includes('qa'),
       insight: selectedOptions.includes('insights'),
       forecast: selectedOptions.includes('forecast')
     };
-    
+
     console.log("Updating chatbot data with:", chatbotDataToUpdate);
     updateChatbotData(chatbotDataToUpdate);
     onClose();
@@ -251,7 +251,7 @@ const FeatureSelectionModal: React.FC<ModalProps> = ({ isOpen, onClose, existing
               Please Choose Functionalities Include in the Chatbot
             </h2>
             <p className="text-xs text-gray-500 mt-1">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt
+              Select the desired features to power your chatbot.
             </p>
           </div>
 

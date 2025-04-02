@@ -22,46 +22,55 @@ const MainPage = () => {
   const query = useQuery();
   const { refreshContext, allArticles } = useRegularApi();
   const { setOrgData, orgData } = useOrg();
-  const { loading, setLoading } = useResponse();
+  const { loading, setLoading,setTicketStatus } = useResponse();
   const [lastMessage, setLastMessage] = useState<any>(null);
   const [localStorageData, setLocalStorageData] = useState<any>();
+
   const { request: getClientHis } = useApi("get", 3004);
   useEffect(() => {
     refreshContext({ articles: true });
     const receiveMessage = (event: MessageEvent) => {
+      // Validate the message origin if needed (recommended for security)
+      // if (event.origin !== "expected-origin") return;
+  
       console.log("Received message:", event);
-      if (event.data?.type === "ORG_DATA") {
+  
+      // Check if the message has the expected structure
+      if (event?.data?.type === "ORG_DATA" && event.data.data) {
         try {
           const parsedData = event.data.data;
-
-          if (!parsedData) {
-            console.error("Parsed data is empty");
+          console.log("Parsed ORG_DATA:", parsedData);
+  
+          // Validate required fields - only email and name are mandatory
+          if (!parsedData?.email || !parsedData?.name) {
+            console.error("Missing required fields in ORG_DATA:", parsedData);
             return;
           }
-
-          console.log("Parsed ORG_DATA:", parsedData);
+  
           const updatedOrgData = {
-            email: parsedData.email || "",
-            image: parsedData.image || "",
-            name: parsedData.name || "",
+            email: parsedData.email,
+            image: parsedData.image || "", // image is optional
+            name: parsedData.name,
           };
-          console.log("updat", updatedOrgData);
-
+  
+          console.log("Processed ORG_DATA:", updatedOrgData);
           setLocalStorageData(updatedOrgData);
-
-          // localStorage.setItem("ORG_DATA", JSON.stringify(updatedOrgData));
+  
         } catch (error) {
-          console.error("Error handling ORG_DATA:", error);
+          console.error("Error processing ORG_DATA:", error);
         }
       }
     };
-
+  
     window.addEventListener("message", receiveMessage);
-
+  
+    // Fallback timeout in case message never arrives
+  
     return () => {
       window.removeEventListener("message", receiveMessage);
     };
-  }, []);
+  }, [refreshContext]);
+  
 
   useEffect(() => {
     const projectName = query.get("projectName") || "";
@@ -129,6 +138,7 @@ const MainPage = () => {
       setLoading(false); // End loading after everything
     }
   };
+
   const getTimeAgo = (dateString: string) => {
     const date = new Date(dateString);
     const now = new Date();
@@ -152,9 +162,11 @@ const MainPage = () => {
     }
 
     return "Just now";
-};
+  };
 
 useEffect(()=>{
+  console.log("org",orgData);
+  
   if(orgData?.email){
     getClientHistory(orgData?.email);
   }
@@ -169,8 +181,7 @@ useEffect(() => {
      }
  }, [orgData?.email]);
 
-console.log("las typ",typeof lastMessage);
-console.log("la",lastMessage);
+
   return (
     <div className="p-2">
       {/* Header */}
@@ -202,7 +213,10 @@ console.log("la",lastMessage);
     </div>
   ) :lastMessage!==null&& (
     <div
-      onClick={() => navigate(`/ticket-view/${lastMessage?._id}`)}
+      onClick={() =>{
+         navigate(`/ticket-view/${lastMessage?._id}`)
+         setTicketStatus(lastMessage?.status)
+        }}
       className="bg-[#1B8FFF] rounded-lg p-4 text-white bg-cover bg-center cursor-pointer"
       style={{ backgroundImage: `url(${RecentMessage || ''})` }}
     >

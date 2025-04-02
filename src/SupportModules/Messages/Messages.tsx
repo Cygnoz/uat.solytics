@@ -144,7 +144,8 @@ const Messages = () => {
     (ticket) =>
       ticket?.subject?.toLowerCase().includes(searchValue.toLowerCase()) ||
       ticket?.status?.toLowerCase().includes(searchValue.toLowerCase()) ||
-      ticket?.description?.toLowerCase().includes(searchValue.toLowerCase())
+      ticket?.description?.toLowerCase().includes(searchValue.toLowerCase())||
+      ticket?.ticketId?.toLowerCase().includes(searchValue.toLowerCase())
   );
 
   useEffect(() => {

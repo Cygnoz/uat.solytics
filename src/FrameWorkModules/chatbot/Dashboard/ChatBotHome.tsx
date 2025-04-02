@@ -7,7 +7,7 @@ import { endpoints } from '../../../Services/apiEndpoints';
 import axiosInstance from '../../../Services/axiosInstance';
 import ChatbotViewModal from './ChatbotViewModal';
 import delete1 from '../../../assets/FrameIcons/delete.png'
-import Edit from '../../../assets/FrameIcons/Edit';
+// import Edit from '../../../assets/FrameIcons/Edit';
 
 
 // Define the complete Chatbot interface
@@ -76,7 +76,7 @@ const ChatbotCard: React.FC<ChatbotCardProps> = ({
             <img className="w-8 h-8" src={chat_bubble} alt="" />
             <div className='flex items-center gap-3'>
             <div  >
-        <Edit />
+        {/* <Edit /> */}
       </div>
               <img
                 src={delete1}
@@ -160,7 +160,7 @@ const ChatbotDashboard = () => {
         setChatbotNames(names);
         setLoading(false);
       } catch (err) {
-        setError('Failed to load chatbots. Please try again later.');
+        // setError('Failed to load chatbots. Please try again later.');
         setLoading(false);
         console.error('Error fetching chatbots:', err);
       }

@@ -40,15 +40,17 @@ function Login() {
 
       // Check for message instead of token
       if (response.data?.message === "Login successful") {
-        // Create a placeholder token if needed
-        const placeholderToken = `user_${email}_${Date.now()}`;
-        sessionStorage.setItem('authToken', placeholderToken);
-
+        const tokenData = {
+            token: response.data.token || `user_${email}_${Date.now()}`,
+            expiresAt: Date.now() + (12 * 60 * 60 * 1000) // 12 hours
+        };
+        
+        localStorage.setItem('token', JSON.stringify(tokenData));
         toast.success('Login successful!');
         navigate('/dashboard');
-      } else {
+    } else {
         throw new Error('Login failed');
-      }
+    }
 
     } catch (err: any) {
       const errorMessage = err.response?.data?.error || err.message || 'Login failed';

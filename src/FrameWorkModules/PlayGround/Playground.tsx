@@ -83,7 +83,8 @@ function Playground({ }: Props) {
                 project_name: chatbotData.name,
                 // boat_name: chatbotData.name,
                 description: chatbotData.description,
-                boat_iframeurl: `https://solytics.online/main?projectName=${chatbotData.name}`,
+                // boat_iframeurl: `https://solytics.online/main?projectName=${chatbotData.name}`,
+                boat_iframeurl: `https://uat.solytics.online/main?projectName=${chatbotData.name}`,
                 theme: {
                     backgroundColor: chatbotData.theme?.backgroundColor,
                     textColor: chatbotData.theme?.textColor

@@ -1,3 +1,4 @@
+import GoBackButton from "../../components/Ui/GoBackButton";
 
 type Props = {};
 
@@ -442,8 +443,10 @@ const SendMessage = ({ }: Props) => {
 //         }
 
 //       </div>
-
-<div className=" flex justify-center items-center h-[70vh]">
+<div className=" px-3 pb-2">
+       {/* Header */}
+          <GoBackButton />
+<div className=" flex justify-center items-center h-[80vh] m-2">
 <div className="flex flex-col items-center text-center text-gray-700">
   <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-transparent bg-clip-text">
      Bot is under development it will be available soon.
@@ -459,7 +462,7 @@ const SendMessage = ({ }: Props) => {
   </div>
 </div>
 </div>
-
+</div>
   );
 };
 
