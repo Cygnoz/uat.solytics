@@ -14,15 +14,11 @@ def get_database():
             mongo_uri = os.getenv("MONGO_URI")
             client = MongoClient(mongo_uri)
 
-            # dev db
-            # database_name = "chatbot_db"
+            #  db
+            database_name = "chatbot_db"
 
             # sit db
-            database_name = "chatbot_sit"
-
-            # UAT db
-            # database_name = "chatbot_uat"
-
+            # database_name = "chatbot_sit"
 
             _db = client[database_name]
             print("Successfully connected to the database.")
