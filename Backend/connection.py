@@ -15,10 +15,10 @@ def get_database():
             client = MongoClient(mongo_uri)
 
             # dev db
-            database_name = "chatbot_db"
+            # database_name = "chatbot_db"
 
             # sit db
-            # database_name = "chatbot_uat"
+            database_name = "chatbot_sit"
 
             # UAT db
             # database_name = "chatbot_uat"
